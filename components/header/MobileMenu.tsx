@@ -38,18 +38,14 @@ function MobileMenu() {
         <div className='absolute top-20 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50'>
           <div className='mx-auto max-w-screen-xl px-6 py-4 flex flex-col gap-3'>
             <nav className='flex flex-col gap-2'>
+             
               <Link
-                href='/find-cars'
+                href='/products'
                 className='text-sm font-medium hover:underline py-2'
               >
-                Find Cars
+                Products
               </Link>
-              <Link
-                href='/bookings'
-                className='text-sm font-medium hover:underline py-2'
-              >
-                Bookings
-              </Link>
+            
             </nav>
 
             <div className='border-t border-gray-200 my-2' />

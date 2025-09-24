@@ -80,9 +80,9 @@ export default function PublicHeader({
 
         {/* Navigation Section */}
         <nav className='hidden md:flex items-center gap-4 flex-1 ml-6'>
-          <Link href='/find-cars'>
+          <Link href='/products'>
             <Button variant='ghost' size='sm'>
-              Find Cars
+              Products
             </Button>
           </Link>
         </nav>

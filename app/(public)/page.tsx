@@ -1,4 +1,3 @@
-import { OnboardingTrigger } from '@/components/features/auth'
 import { HeroSection, ThemeDemo } from '@/components/features/home'
 import { ActionButtons } from '@/components/forms'
 import { getTenantConfig } from '@/lib/tenant'
@@ -26,7 +25,6 @@ export default async function HomePage() {
           <ActionButtons primaryText='Get Started' secondaryText='Learn More' />
         </div>
       </section>
-      <OnboardingTrigger />
       {/* Features Section */}
       <section className='py-16 px-4 bg-surface'>
         <div className='max-w-6xl mx-auto'>

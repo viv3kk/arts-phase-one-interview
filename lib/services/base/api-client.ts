@@ -11,10 +11,7 @@ import {
   CONTENT_TYPES,
   HTTP_METHODS,
 } from '../../config/api-endpoints'
-import {
-  createAuthErrorInterceptor,
-  createAuthRequestInterceptor,
-} from '../auth/auth-interceptor'
+// Auth interceptors removed - products-only app
 import { getCurrentEnvironment, getCurrentTenantId } from './tenant-context'
 import { ApiClientConfig, RequestConfig, RequestContext } from './types'
 
@@ -63,23 +60,23 @@ export interface ServiceConfig {
 export class ApiClient {
   private config: ApiClientConfig
   private serviceConfig: ServiceConfig
-  private authInterceptor?: (
+  private authInterceptor?: ((
     url: string,
     config: RequestConfig,
     context: RequestContext,
   ) =>
     | Promise<{ url: string; config: RequestConfig }>
-    | { url: string; config: RequestConfig }
+    | { url: string; config: RequestConfig }) | null
 
-  private errorInterceptor?: (
+  private errorInterceptor?: ((
     error: any,
     context: RequestContext,
-  ) => Promise<any> | any
+  ) => Promise<any> | any) | null
 
   constructor(config: ApiClientConfig, serviceConfig?: ServiceConfig) {
     this.config = config
     this.serviceConfig = serviceConfig || {}
-    this.setupAuthInterceptors()
+    // Auth interceptors removed for products-only app
   }
 
   /**
@@ -275,7 +272,7 @@ export class ApiClient {
       credentials:
         processedConfig.credentials ||
         this.serviceConfig.credentials ||
-        'include', // ✅ Service-level credentials with fallback
+        'omit', // ✅ Service-level credentials with fallback
     }
 
     // Add body and Content-Type for requests that support it
@@ -576,13 +573,6 @@ export class ApiClient {
     return null
   }
 
-  /**
-   * Setup auth interceptors only
-   */
-  private setupAuthInterceptors(): void {
-    this.authInterceptor = createAuthRequestInterceptor()
-    this.errorInterceptor = createAuthErrorInterceptor()
-  }
 
   /**
    * Update client configuration
