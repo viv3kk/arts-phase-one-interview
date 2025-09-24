@@ -1,0 +1,681 @@
+---
+description: React best practices and patterns for modern web applications
+alwaysApply: false
+---
+# React Best Practices & Guidelines
+
+## 🎯 Core Principles
+
+### **1. Component-First Architecture**
+- **Functional Components**: Always use functional components over class components
+- **Single Responsibility**: Each component should have one clear purpose
+- **Composition Over Inheritance**: Favor composition patterns for code reuse
+- **Props Interface**: Define explicit TypeScript interfaces for all props
+
+### **2. State Management Strategy**
+- **Local State**: Use `useState` for component-specific state
+- **Complex State**: Use `useReducer` for state with multiple sub-values
+- **Shared State**: Use Context API for state shared across components
+- **Global State**: Use Zustand for application-wide state (as per project rules)
+
+## 🏗️ Component Structure Guidelines
+
+### **Component Organization**
+```typescript
+// ✅ Good: Well-structured component
+interface ComponentProps {
+  title: string
+  onAction: () => void
+  children?: React.ReactNode
+}
+
+export function MyComponent({ title, onAction, children }: ComponentProps) {
+  // 1. Hooks at the top
+  const [state, setState] = useState('')
+  const { data, isLoading } = useCustomHook()
+  
+  // 2. Event handlers
+  const handleClick = useCallback(() => {
+    onAction()
+  }, [onAction])
+  
+  // 3. Computed values
+  const computedValue = useMemo(() => {
+    return expensiveCalculation(data)
+  }, [data])
+  
+  // 4. Effects
+  useEffect(() => {
+    // Side effects
+    return () => {
+      // Cleanup
+    }
+  }, [])
+  
+  // 5. Render
+  return (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  )
+}
+```
+
+### **File Structure**
+```
+components/
+├── feature-name/
+│   ├── FeatureComponent.tsx          # Main component
+│   ├── FeatureSubComponent.tsx       # Sub-components
+│   ├── FeatureContext.tsx            # Context if needed
+│   ├── use-feature.ts                # Custom hooks
+│   ├── feature-utils.ts              # Utility functions
+│   └── index.ts                      # Barrel exports
+```
+
+## 🪝 Hooks Best Practices
+
+### **Rules of Hooks**
+- ✅ **Always call hooks at the top level** of your component
+- ✅ **Only call hooks from React functions** (components or custom hooks)
+- ✅ **Use consistent hook order** across renders
+- ❌ **Never call hooks inside loops, conditions, or nested functions**
+
+### **Custom Hooks Pattern**
+```typescript
+// ✅ Good: Custom hook with proper typing
+interface UseDataReturn {
+  data: DataType[]
+  isLoading: boolean
+  error: Error | null
+  refetch: () => void
+}
+
+export function useData(): UseDataReturn {
+  const [data, setData] = useState<DataType[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const result = await api.getData()
+      setData(result)
+    } catch (err) {
+      setError(err as Error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+  
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+  
+  return { data, isLoading, error, refetch: fetchData }
+}
+```
+
+### **Hook Dependencies**
+```typescript
+// ✅ Good: Proper dependency arrays
+useEffect(() => {
+  // Effect logic
+}, [dependency1, dependency2]) // Include all dependencies
+
+// ✅ Good: useCallback for stable references
+const handleClick = useCallback(() => {
+  // Handler logic
+}, [dependency1, dependency2])
+
+// ✅ Good: useMemo for expensive calculations
+const expensiveValue = useMemo(() => {
+  return heavyComputation(data)
+}, [data])
+```
+
+## 🎛️ State Management Patterns
+
+### **Local Component State**
+```typescript
+// ✅ Good: Simple local state
+const [isOpen, setIsOpen] = useState(false)
+const [formData, setFormData] = useState({
+  name: '',
+  email: ''
+})
+
+// ✅ Good: State updates with functions
+setFormData(prev => ({
+  ...prev,
+  name: newName
+}))
+```
+
+### **Complex State with useReducer**
+```typescript
+// ✅ Good: Complex state management
+interface State {
+  items: Item[]
+  loading: boolean
+  error: string | null
+}
+
+type Action = 
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ITEMS'; payload: Item[] }
+  | { type: 'SET_ERROR'; payload: string }
+  | { type: 'ADD_ITEM'; payload: Item }
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload }
+    case 'SET_ITEMS':
+      return { ...state, items: action.payload, loading: false }
+    case 'SET_ERROR':
+      return { ...state, error: action.payload, loading: false }
+    case 'ADD_ITEM':
+      return { ...state, items: [...state.items, action.payload] }
+    default:
+      return state
+  }
+}
+```
+
+### **Context API for Shared State**
+```typescript
+// ✅ Good: Context with useReducer
+interface AppState {
+  user: User | null
+  theme: 'light' | 'dark'
+}
+
+const AppContext = createContext<{
+  state: AppState
+  dispatch: React.Dispatch<AppAction>
+} | undefined>(undefined)
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(appReducer, initialState)
+  
+  return (
+    <AppContext.Provider value={{ state, dispatch }}>
+      {children}
+    </AppContext.Provider>
+  )
+}
+
+export function useAppContext() {
+  const context = useContext(AppContext)
+  if (!context) {
+    throw new Error('useAppContext must be used within AppProvider')
+  }
+  return context
+}
+```
+
+## ⚡ Performance Optimization
+
+### **Memoization Strategies**
+```typescript
+// ✅ Good: Memoize expensive components
+const ExpensiveComponent = React.memo(({ data }: Props) => {
+  return <div>{/* Expensive rendering */}</div>
+})
+
+// ✅ Good: Memoize expensive calculations
+const expensiveValue = useMemo(() => {
+  return heavyComputation(data)
+}, [data])
+
+// ✅ Good: Memoize event handlers
+const handleClick = useCallback(() => {
+  // Handler logic
+}, [dependency])
+```
+
+### **List Rendering Optimization**
+```typescript
+// ✅ Good: Proper key props
+{todos.map(todo => (
+  <TodoItem 
+    key={todo.id} // Use stable, unique keys
+    todo={todo}
+  />
+))}
+
+// ✅ Good: Memoized list items
+const TodoItem = React.memo(({ todo }: TodoItemProps) => {
+  return <li>{todo.title}</li>
+})
+```
+
+### **Lazy Loading**
+```typescript
+// ✅ Good: Lazy load components
+const LazyComponent = React.lazy(() => import('./LazyComponent'))
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <LazyComponent />
+    </Suspense>
+  )
+}
+```
+
+## 📝 Forms & User Input
+
+### **Controlled Components**
+```typescript
+// ✅ Good: Controlled form inputs
+function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  })
+  
+  const handleChange = (field: keyof typeof formData) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: e.target.value
+    }))
+  }
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Submit logic
+  }
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={formData.name}
+        onChange={handleChange('name')}
+        placeholder="Name"
+      />
+      {/* Other fields */}
+    </form>
+  )
+}
+```
+
+### **Form Validation**
+```typescript
+// ✅ Good: Form validation with error states
+function ValidatedForm() {
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  
+  const validate = (data: FormData) => {
+    const newErrors: Record<string, string> = {}
+    
+    if (!data.email) {
+      newErrors.email = 'Email is required'
+    } else if (!isValidEmail(data.email)) {
+      newErrors.email = 'Invalid email format'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (validate(formData)) {
+      // Submit form
+    }
+  }
+}
+```
+
+## 🛡️ Error Handling
+
+### **Error Boundaries**
+```typescript
+// ✅ Good: Error boundary component
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error }
+  }
+  
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo)
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback error={this.state.error} />
+    }
+    
+    return this.props.children
+  }
+}
+```
+
+### **Async Error Handling**
+```typescript
+// ✅ Good: Handle async errors properly
+function DataComponent() {
+  const [error, setError] = useState<Error | null>(null)
+  
+  const fetchData = async () => {
+    try {
+      const data = await api.getData()
+      // Handle success
+    } catch (err) {
+      setError(err as Error)
+      // Log error for debugging
+      console.error('Failed to fetch data:', err)
+    }
+  }
+  
+  if (error) {
+    return <ErrorMessage error={error} onRetry={fetchData} />
+  }
+  
+  return <DataDisplay data={data} />
+}
+```
+
+## ♿ Accessibility (a11y)
+
+### **Semantic HTML**
+```typescript
+// ✅ Good: Semantic HTML elements
+function Navigation() {
+  return (
+    <nav aria-label="Main navigation">
+      <ul role="list">
+        <li><a href="/home">Home</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+  )
+}
+```
+
+### **ARIA Attributes**
+```typescript
+// ✅ Good: Proper ARIA attributes
+function Modal({ isOpen, onClose, children }: ModalProps) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <h2 id="modal-title">Modal Title</h2>
+      <p id="modal-description">Modal description</p>
+      {children}
+      <button onClick={onClose} aria-label="Close modal">
+        ×
+      </button>
+    </div>
+  )
+}
+```
+
+### **Keyboard Navigation**
+```typescript
+// ✅ Good: Keyboard event handling
+function InteractiveComponent() {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleClick()
+    }
+  }
+  
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      aria-pressed={isPressed}
+    >
+      Clickable content
+    </div>
+  )
+}
+```
+
+## 🧪 Testing Guidelines
+
+### **Component Testing**
+```typescript
+// ✅ Good: Component test with React Testing Library
+import { render, screen, fireEvent } from '@testing-library/react'
+import { MyComponent } from './MyComponent'
+
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    render(<MyComponent title="Test" onAction={jest.fn()} />)
+    expect(screen.getByText('Test')).toBeInTheDocument()
+  })
+  
+  it('calls onAction when clicked', () => {
+    const mockAction = jest.fn()
+    render(<MyComponent title="Test" onAction={mockAction} />)
+    
+    fireEvent.click(screen.getByRole('button'))
+    expect(mockAction).toHaveBeenCalledTimes(1)
+  })
+})
+```
+
+### **Hook Testing**
+```typescript
+// ✅ Good: Custom hook test
+import { renderHook, act } from '@testing-library/react-hooks'
+import { useCounter } from './useCounter'
+
+describe('useCounter', () => {
+  it('increments counter', () => {
+    const { result } = renderHook(() => useCounter())
+    
+    act(() => {
+      result.current.increment()
+    })
+    
+    expect(result.current.count).toBe(1)
+  })
+})
+```
+
+## 📦 Code Organization
+
+### **Import/Export Patterns**
+```typescript
+// ✅ Good: Barrel exports
+// components/feature/index.ts
+export { FeatureComponent } from './FeatureComponent'
+export { FeatureSubComponent } from './FeatureSubComponent'
+export { useFeature } from './use-feature'
+export type { FeatureProps } from './types'
+
+// ✅ Good: Named imports
+import { FeatureComponent, useFeature } from '@/components/feature'
+```
+
+### **Type Definitions**
+```typescript
+// ✅ Good: Separate type definitions
+// types/feature.ts
+export interface FeatureProps {
+  title: string
+  onAction: () => void
+  children?: React.ReactNode
+}
+
+export interface FeatureState {
+  isLoading: boolean
+  data: FeatureData[]
+  error: string | null
+}
+```
+
+## 🚀 Advanced Patterns
+
+### **Render Props Pattern**
+```typescript
+// ✅ Good: Render props for flexible components
+interface DataFetcherProps<T> {
+  url: string
+  children: (data: T[], loading: boolean, error: Error | null) => React.ReactNode
+}
+
+function DataFetcher<T>({ url, children }: DataFetcherProps<T>) {
+  const [data, setData] = useState<T[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  
+  useEffect(() => {
+    fetch(url)
+      .then(res => res.json())
+      .then(setData)
+      .catch(setError)
+      .finally(() => setLoading(false))
+  }, [url])
+  
+  return <>{children(data, loading, error)}</>
+}
+```
+
+### **Compound Components**
+```typescript
+// ✅ Good: Compound component pattern
+interface SelectProps {
+  value: string
+  onChange: (value: string) => void
+  children: React.ReactNode
+}
+
+interface SelectOptionProps {
+  value: string
+  children: React.ReactNode
+}
+
+const SelectContext = createContext<{
+  value: string
+  onChange: (value: string) => void
+} | undefined>(undefined)
+
+export function Select({ value, onChange, children }: SelectProps) {
+  return (
+    <SelectContext.Provider value={{ value, onChange }}>
+      <div role="listbox">{children}</div>
+    </SelectContext.Provider>
+  )
+}
+
+export function SelectOption({ value, children }: SelectOptionProps) {
+  const context = useContext(SelectContext)
+  if (!context) throw new Error('SelectOption must be used within Select')
+  
+  return (
+    <div
+      role="option"
+      aria-selected={context.value === value}
+      onClick={() => context.onChange(value)}
+    >
+      {children}
+    </div>
+  )
+}
+```
+
+## 📋 Checklist for Code Review
+
+### **Component Structure**
+- [ ] Uses functional components
+- [ ] Has proper TypeScript interfaces
+- [ ] Follows single responsibility principle
+- [ ] Uses composition over inheritance
+- [ ] Has proper prop validation
+
+### **Hooks Usage**
+- [ ] Hooks called at top level
+- [ ] Proper dependency arrays
+- [ ] Custom hooks for reusable logic
+- [ ] Proper cleanup in useEffect
+- [ ] No nested hooks
+
+### **Performance**
+- [ ] Memoization where appropriate
+- [ ] Proper key props in lists
+- [ ] Lazy loading for large components
+- [ ] Optimized re-renders
+- [ ] Bundle size considerations
+
+### **Accessibility**
+- [ ] Semantic HTML elements
+- [ ] Proper ARIA attributes
+- [ ] Keyboard navigation support
+- [ ] Screen reader compatibility
+- [ ] Focus management
+
+### **Error Handling**
+- [ ] Error boundaries implemented
+- [ ] Async error handling
+- [ ] User-friendly error messages
+- [ ] Proper error logging
+- [ ] Fallback UI components
+
+### **Testing**
+- [ ] Unit tests for components
+- [ ] Integration tests for flows
+- [ ] Accessibility testing
+- [ ] Error scenario testing
+- [ ] Performance testing
+
+## 🎯 Benefits of Following These Guidelines
+
+### **1. Maintainability**
+- **Single Responsibility**: Each component has one clear purpose
+- **Easy Debugging**: Issues isolated to specific components
+- **Clear Dependencies**: Explicit prop interfaces
+- **Reduced Complexity**: Smaller, focused components
+
+### **2. Reusability**
+- **Component Reuse**: Components can be used elsewhere
+- **Logic Reuse**: Custom hooks for shared logic
+- **Pattern Consistency**: Same patterns across the app
+- **Testing**: Each component can be tested independently
+
+### **3. Performance**
+- **Optimized Re-renders**: Only affected components re-render
+- **Memoization**: Expensive operations memoized
+- **Lazy Loading**: Components loaded on demand
+- **Bundle Splitting**: Smaller bundle sizes
+
+### **4. Developer Experience**
+- **Type Safety**: Full TypeScript support throughout
+- **IntelliSense**: Better autocomplete and error detection
+- **Code Navigation**: Easy to find specific functionality
+- **Code Review**: Smaller, focused changes
+
+### **5. Scalability**
+- **Easy Extension**: New features can be added as new components
+- **Team Development**: Multiple developers can work on different components
+- **Feature Flags**: Components can be conditionally rendered
+- **A/B Testing**: Easy to swap components for testing
+
+This comprehensive guide ensures your React applications follow modern best practices, maintain high code quality, and provide excellent developer and user experiences.
+
+Feature Flags: Components can be conditionally rendered
+A/B Testing: Easy to swap components for testing

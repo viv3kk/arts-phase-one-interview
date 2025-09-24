@@ -1,0 +1,35 @@
+{
+  "tenants": {
+    "abc-rentals": {
+      "id": "abc-rentals",
+      "name": "ABC Car Rentals",
+      "status": "active",
+      "configFile": "abc-rentals.json"
+    },
+    "abc-rental": {
+      "id": "abc-rental",
+      "name": "ABC Rental",
+      "status": "active",
+      "configFile": "abc-rental.json"
+    },
+    "xyz-cars": {
+      "id": "xyz-cars",
+      "name": "XYZ Cars",
+      "status": "active",
+      "configFile": "xyz-cars.json"
+    },
+    "test-rental": {
+      "id": "test-rental",
+      "name": "Test Rental Co",
+      "status": "active",
+      "configFile": "test-rental.json"
+    },
+    "xyz-rental": {
+      "id": "xyz-rental",
+      "name": "XYZ Rental",
+      "status": "active",
+      "configFile": "xyz-rental.json"
+    }
+  },
+  "default": "default.json"
+}

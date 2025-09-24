@@ -1,0 +1,469 @@
+# Hooks Architecture Rules
+
+## Core Principles
+
+### ✅ Separation of Concerns
+
+- **Data Layer**: React Query hooks for API operations
+- **Business Logic Layer**: Custom hooks that orchestrate operations
+- **UI Layer**: Components that consume business logic hooks
+
+### ✅ Single Responsibility
+
+- Each hook should have one clear purpose
+- Avoid mixing concerns (data fetching, business logic, UI state)
+- Use composition to build complex functionality
+
+### ✅ Reusability
+
+- Design hooks to be reusable across components
+- Provide flexible APIs that adapt to different use cases
+- Export both simple and advanced interfaces
+
+## Hook Architecture Patterns
+
+### Three-Layer Hook Architecture
+
+```typescript
+// 1. Data Layer - React Query Hooks
+export function useSendOtp() {
+  const mutation = useMutation({
+    mutationFn: authService.sendOtp,
+    onSuccess: data => {
+      /* handle success */
+    },
+    onError: error => {
+      /* handle error */
+    },
+  })
+
+  return {
+    sendOtp: mutation.mutate, // Fire-and-forget
+    sendOtpAsync: mutation.mutateAsync, // Awaitable
+    isLoading: mutation.isPending,
+    error: mutation.error,
+    reset: mutation.reset,
+  }
+}
+
+// 2. Business Logic Layer - Orchestration Hooks
+export function useLoginFlow() {
+  const sendOtpMutation = useSendOtp()
+  const verifyOtpMutation = useVerifyOtp()
+
+  const sendOtp = async (mobileNumber: string, languageCode = 'en') => {
+    try {
+      await sendOtpMutation.sendOtpAsync({ mobileNumber, languageCode })
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  const verifyOtp = async (otp: string) => {
+    try {
+      await verifyOtpMutation.verifyOtpAsync({ otp })
+      // Handle success logic (close modal, redirect, etc.)
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  return {
+    sendOtp,
+    verifyOtp,
+    isLoading: sendOtpMutation.isLoading || verifyOtpMutation.isLoading,
+  }
+}
+
+// 3. UI Layer - Component Usage
+function LoginModal() {
+  const { sendOtp, verifyOtp, isLoading } = useLoginFlow()
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const result = await sendOtp(mobileNumber, 'en')
+    if (result.success) {
+      setStep('otp')
+    } else {
+      setError(result.error)
+    }
+  }
+}
+```
+
+## Hook Design Patterns
+
+### ✅ Mutation Hook Pattern
+
+```typescript
+// Always provide both sync and async versions
+export function useCustomMutation() {
+  const mutation = useMutation({
+    mutationFn: service.method,
+    onSuccess: data => {
+      /* success logic */
+    },
+    onError: error => {
+      /* error logic */
+    },
+  })
+
+  return {
+    // Fire-and-forget (for simple operations)
+    mutate: mutation.mutate,
+    // Awaitable (for complex flows)
+    mutateAsync: mutation.mutateAsync,
+    // State
+    isLoading: mutation.isPending,
+    error: mutation.error,
+    // Utilities
+    reset: mutation.reset,
+  }
+}
+```
+
+### ✅ Business Logic Hook Pattern
+
+```typescript
+// Encapsulate complex operations
+export function useBusinessOperation() {
+  const mutation1 = useMutation1()
+  const mutation2 = useMutation2()
+
+  const executeOperation = async (params: Params) => {
+    try {
+      // Step 1: First operation
+      const result1 = await mutation1.mutateAsync(params)
+
+      // Step 2: Second operation (depends on first)
+      const result2 = await mutation2.mutateAsync(result1.data)
+
+      // Step 3: Handle success
+      return { success: true, data: result2.data }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  return {
+    executeOperation,
+    isLoading: mutation1.isLoading || mutation2.isLoading,
+  }
+}
+```
+
+### ✅ State Management Hook Pattern
+
+```typescript
+// Combine multiple state sources
+export function useCombinedState() {
+  const auth = useAuth()
+  const user = useUser()
+
+  return {
+    isAuthenticated: auth.isAuthenticated,
+    user: user.profile,
+    authKey: auth.authKey,
+    userId: auth.userId,
+    isLoading: auth.isLoading || user.isLoading,
+  }
+}
+```
+
+## File Organization
+
+### Hook File Structure
+
+```
+lib/services/hooks/
+├── auth-hooks.ts          # Authentication hooks
+├── user-hooks.ts          # User profile hooks
+├── product-hooks.ts       # Product-related hooks
+└── index.ts              # Export all hooks
+```
+
+### Hook Export Pattern
+
+```typescript
+// lib/services/hooks/index.ts
+export {
+  // Data layer hooks
+  useSendOtp,
+  useVerifyOtp,
+  useUserProfile,
+
+  // Business logic hooks
+  useLoginFlow,
+  useLogout,
+
+  // Combined state hooks
+  useAuthSession as useSession,
+} from './auth-hooks'
+```
+
+## UI Layer Integration
+
+### ✅ Component Hook Usage
+
+```typescript
+// ✅ Good - Use business logic hooks
+function LoginModal() {
+  const { sendOtp, verifyOtp, isLoading } = useLoginFlow()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const result = await sendOtp(mobileNumber)
+    if (result.success) {
+      setStep('otp')
+    }
+  }
+}
+
+// ❌ Avoid - Direct mutation usage in components
+function LoginModal() {
+  const sendOtpMutation = useSendOtp()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      await sendOtpMutation.mutateAsync({ mobileNumber })
+      setStep('otp')
+    } catch (error) {
+      setError(error.message)
+    }
+  }
+}
+```
+
+### ✅ Error Handling Pattern
+
+```typescript
+// Business logic hook handles errors
+export function useLoginFlow() {
+  const sendOtp = async (mobileNumber: string) => {
+    try {
+      await sendOtpMutation.sendOtpAsync({ mobileNumber })
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+}
+
+// UI component uses result pattern
+function LoginModal() {
+  const { sendOtp } = useLoginFlow()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const result = await sendOtp(mobileNumber)
+
+    if (result.success) {
+      setStep('otp')
+    } else {
+      setError(result.error)
+    }
+  }
+}
+```
+
+## Performance Optimization
+
+### ✅ useShallow for Zustand
+
+```typescript
+// ✅ Good - Prevent unnecessary re-renders
+export const useUser = () => {
+  const store = useContext(StoreContext)
+  return useStore(
+    store,
+    useShallow(state => ({
+      profile: state.profile,
+      isLoading: state.isLoading,
+      setProfile: state.setProfile,
+    }))
+  )
+}
+
+// ❌ Avoid - Object recreation on every render
+export const useUser = () => {
+  const store = useContext(StoreContext)
+  return useStore(store, state => ({
+    profile: state.profile,
+    isLoading: state.isLoading,
+    setProfile: state.setProfile,
+  }))
+}
+```
+
+### ✅ Memoized Selectors
+
+```typescript
+// ✅ Good - Memoize expensive computations
+export function useUserDisplayName() {
+  const { profile } = useUser()
+
+  return useMemo(() => {
+    if (!profile) return 'Guest'
+    return profile.name || profile.mobileNumber || 'User'
+  }, [profile])
+}
+```
+
+## Testing Patterns
+
+### Hook Testing
+
+```typescript
+import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+test('useLoginFlow handles success', async () => {
+  const queryClient = new QueryClient()
+  const wrapper = ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  )
+
+  const { result } = renderHook(() => useLoginFlow(), { wrapper })
+
+  const response = await result.current.sendOtp('+1234567890')
+
+  expect(response.success).toBe(true)
+})
+```
+
+### Mock Service Layer
+
+```typescript
+// Mock the service layer, not the hooks
+jest.mock('@/lib/services/auth/auth-service', () => ({
+  authService: {
+    sendOtp: jest.fn(),
+    verifyOtp: jest.fn(),
+  },
+}))
+```
+
+## Common Anti-Patterns
+
+### ❌ Avoid Direct Mutation in UI
+
+```typescript
+// ❌ Bad - UI component handles business logic
+function LoginModal() {
+  const sendOtpMutation = useSendOtp()
+  const verifyOtpMutation = useVerifyOtp()
+
+  const handleSendOtp = async () => {
+    try {
+      await sendOtpMutation.mutateAsync({ mobileNumber })
+      setStep('otp')
+    } catch (error) {
+      setError(error.message)
+    }
+  }
+}
+```
+
+### ❌ Avoid Mixed Concerns
+
+```typescript
+// ❌ Bad - Hook mixes data fetching and UI state
+export function useLoginModal() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [step, setStep] = useState('mobile')
+  const sendOtpMutation = useSendOtp()
+
+  return {
+    isOpen,
+    step,
+    sendOtp: sendOtpMutation.mutate,
+    // ... mixed concerns
+  }
+}
+```
+
+### ❌ Avoid Over-Engineering
+
+```typescript
+// ❌ Bad - Too many layers for simple operations
+export function useSimpleOperation() {
+  const mutation = useMutation({ mutationFn: simpleService.call })
+
+  const execute = useCallback(
+    async params => {
+      return await mutation.mutateAsync(params)
+    },
+    [mutation]
+  )
+
+  return { execute, isLoading: mutation.isLoading }
+}
+
+// ✅ Good - Simple hook for simple operations
+export function useSimpleOperation() {
+  const mutation = useMutation({ mutationFn: simpleService.call })
+
+  return {
+    execute: mutation.mutateAsync,
+    isLoading: mutation.isLoading,
+  }
+}
+```
+
+## Best Practices Summary
+
+### Hook Creation
+
+1. **Start with React Query hooks** for data operations
+2. **Add business logic hooks** for complex flows
+3. **Provide both sync and async interfaces**
+4. **Use consistent return patterns**
+
+### Hook Usage
+
+1. **Use business logic hooks in UI components**
+2. **Handle errors at the hook level**
+3. **Return success/error objects for complex flows**
+4. **Keep UI components focused on presentation**
+
+### Performance
+
+1. **Use `useShallow` for Zustand selectors**
+2. **Memoize expensive computations**
+3. **Avoid object recreation in selectors**
+4. **Lazy load non-critical hooks**
+
+### Testing
+
+1. **Test business logic hooks, not data hooks**
+2. **Mock service layer, not React Query**
+3. **Test error scenarios**
+4. **Use proper test wrappers**
+
+## Migration Guide
+
+### From Direct Mutation Usage
+
+1. **Identify business logic** in components
+2. **Create business logic hooks** to encapsulate operations
+3. **Update components** to use business logic hooks
+4. **Remove direct mutation calls** from UI layer
+
+### From Mixed Concerns
+
+1. **Separate data fetching** into React Query hooks
+2. **Extract business logic** into custom hooks
+3. **Keep UI state** in components or simple state hooks
+4. **Compose complex functionality** from simple hooks
+
+This architecture ensures clean separation of concerns, reusability, and maintainable code while providing flexible APIs for different use cases.
+description:
+globs:
+alwaysApply: false
+
+---

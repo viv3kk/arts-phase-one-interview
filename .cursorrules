@@ -1,0 +1,489 @@
+# Multi-Tenant Storefront Development Rules
+
+You are an expert in **Next.js 15 App Router**, **React 18+**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui**, **Zustand**, **React Query**, and **multi-tenant architecture**.
+
+## 🏗️ Project Architecture
+
+### Multi-Tenant System
+
+- **Subdomain-based routing**: `abc-rental.localhost:3000` → abc-rental tenant
+- **Dynamic tenant detection** via middleware with `x-tenant-id` header
+- **Theme system** with CSS custom properties for dynamic theming
+- **Tenant-specific configurations** in `config/tenants/`
+
+### Technology Stack
+
+- **Next.js 15** with App Router and Server Components
+- **React 18+** with concurrent features
+- **TypeScript** with strict configuration
+- **Tailwind CSS v4** with semantic design tokens
+- **shadcn/ui** for component library
+- **Zustand** for client-side state management
+- **React Query** for server state management
+- **OTP-based authentication** with tenant-aware API integration
+
+## 🎨 Theme System
+
+### Semantic Design Tokens
+
+```css
+/* Use semantic classes that adapt to tenant themes */
+--color-primary: #2563eb; /* Ocean theme */
+--color-primary: #dc2626; /* Fire theme */
+--color-primary: #059669; /* Forest theme */
+```
+
+### Component Theming
+
+```tsx
+// ✅ Correct - automatic theme adaptation
+<Button className="bg-primary text-primary-foreground">
+  Themed Button
+</Button>
+
+// ❌ Avoid - hardcoded colors
+<button className="bg-blue-600 text-white">
+  Hardcoded Button
+</button>
+```
+
+### Theme Access
+
+```tsx
+import { useAppliedTheme } from '@/components/providers/ThemeProvider'
+
+function MyComponent() {
+  const theme = useAppliedTheme()
+  return <div style={{ color: theme.primary }}>Dynamic theme!</div>
+}
+```
+
+## 🏗️ Rendering Strategies
+
+### Quick Decision Matrix
+
+| Content Type    | User Data | Update Frequency | Strategy |
+| --------------- | --------- | ---------------- | -------- |
+| Marketing pages | No        | Rarely           | **SSG**  |
+| Product catalog | No        | Daily/Weekly     | **ISR**  |
+| User dashboard  | Yes       | Real-time        | **SSR**  |
+| Tenant landing  | No        | Monthly          | **ISR**  |
+
+### Implementation Examples
+
+```tsx
+// SSG - Static content
+export default function AboutPage() {
+  return <StaticContent />
+}
+
+// ISR - Periodic updates
+export const revalidate = 3600 // 1 hour
+export default async function ProductsPage() {
+  const products = await fetchProducts()
+  return <ProductGrid products={products} />
+}
+
+// SSR - User-specific
+import { headers } from 'next/headers'
+export default async function DashboardPage() {
+  const userId = (await headers()).get('x-user-id')
+  const userData = await fetchUserData(userId)
+  return <Dashboard userData={userData} />
+}
+```
+
+## 🧩 Component Architecture
+
+### File Organization
+
+```
+components/
+├── providers/          # Context providers
+│   ├── TenantProvider.tsx
+│   └── ThemeProvider.tsx
+└── ui/                # Reusable UI components
+    ├── Button.tsx
+    ├── Card.tsx
+    └── LoginModal.tsx
+```
+
+### Component Structure
+
+```tsx
+// ✅ Good component structure
+interface ComponentProps {
+  title: string
+  onAction: () => void
+  children?: React.ReactNode
+}
+
+export function MyComponent({ title, onAction, children }: ComponentProps) {
+  // 1. Hooks at the top
+  const [state, setState] = useState('')
+  const { data, isLoading } = useCustomHook()
+
+  // 2. Event handlers
+  const handleClick = useCallback(() => {
+    onAction()
+  }, [onAction])
+
+  // 3. Computed values
+  const computedValue = useMemo(() => {
+    return expensiveCalculation(data)
+  }, [data])
+
+  // 4. Effects
+  useEffect(() => {
+    // Side effects
+    return () => {
+      // Cleanup
+    }
+  }, [])
+
+  // 5. Render
+  return (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  )
+}
+```
+
+## 🗃️ State Management
+
+### Zustand Store Architecture
+
+```typescript
+// Slice-based architecture
+export const createAppStore = (initialState?: Partial<StoreState>) => {
+  return createStore<StoreState>()(
+    persist(
+      (set, get, api) => ({
+        ...createAuthSlice(set, get, api),
+        ...createUserSlice(set, get, api),
+        // Future slices: UI, Cart, etc.
+      }),
+      {
+        name: 'storefront-store',
+        partialize: state => ({
+          authKey: state.authKey,
+          userId: state.userId,
+          isAuthenticated: state.isAuthenticated,
+        }),
+        skipHydration: true, // Manual hydration for SSR
+      }
+    )
+  )
+}
+```
+
+### Consolidated Loading States
+
+```typescript
+// ✅ Good - single loading state per domain
+interface AuthState {
+  isLoading: boolean // One loading state for all auth operations
+}
+
+// ❌ Avoid - multiple loading states
+interface AuthState {
+  isLoggingIn: boolean
+  isSendingOtp: boolean
+  isVerifyingOtp: boolean
+}
+```
+
+### React Query Integration
+
+```typescript
+// Host-consumer pattern
+export function useAuth() {
+  const sendOtpMutation = useSendOtp()
+  const verifyOtpMutation = useVerifyOtp()
+
+  const isLoading = sendOtpMutation.isPending || verifyOtpMutation.isPending
+
+  return {
+    sendOtp: sendOtpMutation.mutate,
+    verifyOtp: verifyOtpMutation.mutate,
+    isLoading, // Single loading state
+  }
+}
+```
+
+## 🔧 Service Layer Architecture
+
+### Three-Layer Pattern
+
+```typescript
+// 1. Endpoints (API definitions)
+export const authEndpoints = {
+  sendOtp: endpoint<SendOtpRequest, SendOtpResponse>('/auth/send-otp', 'POST'),
+  verifyOtp: endpoint<VerifyOtpRequest, VerifyOtpResponse>(
+    '/auth/verify-otp',
+    'POST'
+  ),
+}
+
+// 2. Services (business logic)
+export class AuthService {
+  async sendOtp(mobileNumber: string, languageCode = 'en') {
+    return await apiClient.post(authEndpoints.sendOtp, {
+      mobileNumber,
+      languageCode,
+    })
+  }
+}
+
+// 3. Hooks (React Query integration)
+export function useSendOtp() {
+  return useMutation({
+    mutationFn: authService.sendOtp,
+    onSuccess: data => {
+      // Handle success
+    },
+  })
+}
+```
+
+### API Client Pattern
+
+```typescript
+// ✅ Correct - use service layer
+const result = await authService.sendOtp(mobileNumber)
+
+// ❌ Incorrect - direct fetch
+const response = await fetch('/api/auth/send-otp', {
+  method: 'POST',
+  body: JSON.stringify({ mobileNumber }),
+})
+```
+
+## 🎨 UI Component Rules
+
+### Mobile-First Design (ALWAYS APPLIED)
+
+**CRITICAL**: All UI components must follow mobile-first design principles. See `.cursor/rules/ui-mobile-first.mdc` for comprehensive guidelines.
+
+**Key Requirements:**
+
+- ✅ **Mobile-first breakpoints**: Start with mobile styles, enhance for larger screens
+- ✅ **Touch-friendly targets**: Minimum 44px height for all interactive elements
+- ✅ **Responsive typography**: Scale text appropriately across devices
+- ✅ **Mobile-optimized layouts**: Card layouts for mobile, table layouts for desktop
+- ✅ **Thumb-zone navigation**: Ensure navigation is accessible on mobile
+
+### shadcn/ui Usage
+
+```tsx
+// ✅ Always use shadcn/ui components
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+<Button variant="outline" size="sm">
+  Action
+</Button>
+
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+  </CardHeader>
+  <CardContent>Content</CardContent>
+</Card>
+
+// ❌ Never use raw HTML elements for UI
+<button className="px-4 py-2 bg-blue-500 text-white rounded">
+  Action
+</button>
+```
+
+### Semantic Classes
+
+```tsx
+// ✅ Use semantic classes that adapt to themes
+<div className="bg-primary text-primary-foreground">
+  Themed content
+</div>
+
+// ❌ Avoid hardcoded colors
+<div className="bg-blue-600 text-white">
+  Hardcoded content
+</div>
+```
+
+## 🔐 Authentication System
+
+### OTP-Based Flow
+
+```typescript
+// 1. Send OTP
+const { sendOtp } = useAuth()
+await sendOtp(mobileNumber)
+
+// 2. Verify OTP
+const { verifyOtp } = useAuth()
+await verifyOtp(otp)
+
+// 3. Store auth data
+setAuthData({ authKey: 'abc123', userId: 'user456' })
+```
+
+### Global Modal System
+
+```typescript
+// From any component
+const { openLoginModal } = useAuth()
+
+openLoginModal(() => {
+  router.push('/dashboard')
+  showToast('Welcome!')
+})
+```
+
+## 📁 File Structure
+
+### Directory Organization
+
+```
+app/                    # Next.js App Router
+├── layout.tsx         # Root layout with providers
+├── page.tsx          # Home page (ISR)
+└── globals.css       # Global styles
+
+components/
+├── providers/        # Context providers
+└── ui/              # shadcn/ui components
+
+lib/
+├── stores/          # Zustand stores
+├── services/        # Service layer
+├── hooks/           # Custom hooks
+├── types/           # TypeScript types
+└── utils/           # Utility functions
+
+config/
+├── tenants.json     # Tenant registry
+└── tenants/         # Individual tenant configs
+```
+
+### Naming Conventions
+
+- **Files**: `kebab-case.tsx` (e.g., `login-modal.tsx`)
+- **Components**: `PascalCase` (e.g., `LoginModal`)
+- **Hooks**: `camelCase` with `use` prefix (e.g., `useAuth`)
+- **Types**: `PascalCase` with descriptive names (e.g., `AuthState`)
+
+## 🚀 Performance Optimization
+
+### Server Components First
+
+```tsx
+// ✅ Default to Server Components
+export default async function ProductPage() {
+  const products = await fetchProducts() // Server-side data fetching
+  return <ProductGrid products={products} />
+}
+
+// ✅ Use Client Components only when needed
+;('use client')
+export function InteractiveComponent() {
+  const [state, setState] = useState('')
+  return <div>{state}</div>
+}
+```
+
+### Code Splitting
+
+```tsx
+// Lazy load non-critical components
+const LazyComponent = lazy(() => import('./LazyComponent'))
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <LazyComponent />
+    </Suspense>
+  )
+}
+```
+
+## 🧪 Testing Patterns
+
+### Component Testing
+
+```typescript
+import { render, screen } from '@testing-library/react'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
+
+test('component renders with theme', () => {
+  render(
+    <ThemeProvider>
+      <MyComponent />
+    </ThemeProvider>
+  )
+
+  expect(screen.getByRole('button')).toBeInTheDocument()
+})
+```
+
+### Service Testing
+
+```typescript
+import { AuthService } from '@/lib/services/auth/auth-service'
+
+test('sendOtp calls correct endpoint', async () => {
+  const mockApiClient = { post: jest.fn() }
+  const authService = new AuthService(mockApiClient)
+
+  await authService.sendOtp('+1234567890')
+
+  expect(mockApiClient.post).toHaveBeenCalledWith(authEndpoints.sendOtp, {
+    mobileNumber: '+1234567890',
+    languageCode: 'en',
+  })
+})
+```
+
+## 🔧 Development Workflow
+
+### Multi-Tenant Testing
+
+```bash
+# Test different tenants
+http://localhost:3000                    # Default (Ocean)
+http://abc-rental.localhost:3000         # Fire theme
+http://xyz-rental.localhost:3000         # Forest theme
+```
+
+### Common Commands
+
+```bash
+npm run dev              # Start development
+npm run build           # Production build
+npm run lint            # ESLint checking
+npm run type-check      # TypeScript validation
+npm run test:config     # Validate tenant configs
+```
+
+## 🎯 Key Principles
+
+1. **Server Components First**: Default to server components, use client components only when needed
+2. **Type Safety**: Full TypeScript implementation with strict configuration
+3. **Semantic Theming**: Use semantic classes that adapt to tenant themes
+4. **Consolidated States**: Single loading state per domain for simpler component logic
+5. **Service Layer**: Always use service layer pattern for API calls
+6. **shadcn/ui**: Use shadcn/ui components for consistent UI
+7. **Multi-Tenant**: Design everything with multi-tenancy in mind
+8. **Performance**: Optimize for Core Web Vitals and user experience
+
+## 📚 Documentation
+
+- **Quick Reference**: `docs/QUICK-REFERENCE.md`
+- **Architecture**: `docs/ARCHITECTURE-OVERVIEW.md`
+- **Theme System**: `docs/THEME-SYSTEM.md`
+- **UI Components**: `docs/UI-COMPONENTS.md`
+- **Rendering Strategies**: `docs/RENDERING-STRATEGIES.md`
+
+Follow these patterns consistently to maintain code quality, performance, and developer experience across the multi-tenant storefront application.

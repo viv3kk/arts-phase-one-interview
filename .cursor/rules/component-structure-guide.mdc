@@ -1,0 +1,69 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🧩 Component Structure Guidelines for Next.js Projects
+
+This guide outlines **when to co-locate components** and **when to move them to the global `components/` directory**.
+
+---
+
+## ✅ Co-located Components
+
+These are components stored alongside the page or feature they support, typically under:
+
+```
+/app/[route]/components/
+```
+
+### Use co-located components when:
+
+- The component is used **only by a single page**.
+- It is tightly coupled to the business logic or layout of that specific page.
+- It simplifies navigation and onboarding for new developers working in that section.
+
+> Example:
+```bash
+/app/dashboard/components/UserCard.tsx
+```
+
+---
+
+## 🌐 Global Components
+
+Store global components under:
+
+```
+/components/
+```
+
+### Move to `components/` when:
+
+- The component is reused across **multiple routes** or modules.
+- It’s a **generic UI component**, like `Button`, `Modal`, or `Card`.
+- It follows **design system or atomic design principles**.
+- It improves reusability and consistency across the app.
+
+> Example:
+```bash
+/components/ui/Button.tsx
+```
+
+---
+
+## 🧠 Best Practices
+
+- Keep `components/` **flat and grouped by function**, not by route.
+- Use **index.ts** files for clean imports.
+- Consider adding subfolders like `ui/`, `layout/`, `charts/`, etc.
+
+---
+
+## 🛠️ Tip for Cursor AI
+
+Add this guide to your workspace as a `.cursor-template.mdx` to reinforce component hygiene for your team.
+
+---
+
+Happy coding! 🚀

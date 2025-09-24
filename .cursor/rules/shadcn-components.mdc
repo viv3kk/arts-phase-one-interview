@@ -1,0 +1,634 @@
+---
+alwaysApply: true
+---
+
+# Shadcn UI Component Rules
+
+## Core Principles
+
+### ✅ Always Use Shadcn Components
+- **Never create custom UI components** when shadcn equivalents exist
+- **Import from `@/components/ui/`** for all UI components
+- **Use shadcn variants and props** instead of custom styling
+
+### ✅ Button Component Rules
+- **Always use `Button` from `@/components/ui/button`**
+- **Use semantic variants**: `default`, `destructive`, `outline`, `secondary`, `ghost`, `link`
+- **Use size variants**: `default`, `sm`, `lg`, `icon`
+- **Never use custom button elements** (`<button>`, `<a>` for actions)
+- **Use `asChild` prop** when wrapping other elements
+
+```tsx
+// ✅ Correct
+import { Button } from '@/components/ui/button'
+
+<Button variant="outline" size="sm" onClick={handleClick}>
+  Click me
+</Button>
+
+<Button asChild>
+  <Link href="/path">Navigate</Link>
+</Button>
+
+// ❌ Incorrect
+<button className="px-4 py-2 bg-blue-500 text-white rounded">
+  Click me
+</button>
+```
+
+### ✅ Form Components Rules
+- **Use `Input`** for text inputs
+- **Use `Textarea`** for multi-line text
+- **Use `Select`** with `SelectContent`, `SelectItem`, `SelectTrigger`, `SelectValue`
+- **Use `Label`** for form labels
+- **Use `Checkbox`** for boolean inputs
+- **Use `RadioGroup`** for single-choice selections
+
+```tsx
+// ✅ Correct
+import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui'
+
+<div className="space-y-2">
+  <Label htmlFor="name">Name</Label>
+  <Input id="name" placeholder="Enter name" />
+</div>
+
+<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Select option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Option 1</SelectItem>
+  </SelectContent>
+</Select>
+
+// ❌ Incorrect
+<input type="text" className="border rounded px-3 py-2" />
+<select className="border rounded px-3 py-2">
+  <option>Option 1</option>
+</select>
+```
+
+### ✅ Modal and Dialog Rules
+- **Use `ResponsiveModal`** for modals (mobile-friendly)
+- **Use `Dialog`** for simple dialogs
+- **Use `Popover`** for dropdown menus and tooltips
+- **Use `Sheet`** for slide-out panels
+
+```tsx
+// ✅ Correct
+import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle } from '@/components/ui/responsive-modal'
+
+<ResponsiveModal open={open} onOpenChange={setOpen}>
+  <ResponsiveModalContent>
+    <ResponsiveModalHeader>
+      <ResponsiveModalTitle>Title</ResponsiveModalTitle>
+    </ResponsiveModalHeader>
+    {/* Content */}
+  </ResponsiveModalContent>
+</ResponsiveModal>
+
+// ❌ Incorrect
+<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+  <div className="bg-white rounded-lg p-6">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### ✅ Layout and Structure Rules
+- **Use `Card`** for content containers
+- **Use `Separator`** for visual dividers
+- **Use `Badge`** for status indicators
+- **Use `Avatar`** for user images
+- **Use `Skeleton`** for loading states
+
+```tsx
+// ✅ Correct
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <Badge variant="secondary">Status</Badge>
+  </CardContent>
+</Card>
+
+// ❌ Incorrect
+<div className="bg-white rounded-lg shadow border p-6">
+  <h3 className="text-lg font-semibold">Title</h3>
+  <span className="inline-block px-2 py-1 bg-gray-100 rounded text-sm">Status</span>
+</div>
+```
+
+### ✅ Data Display Rules
+- **Use `Table`** components for data tables
+- **Use `Tabs`** for tabbed interfaces
+- **Use `Accordion`** for collapsible content
+- **Use `Calendar`** for date selection
+- **Use `Progress`** for progress indicators
+
+```tsx
+// ✅ Correct
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Value</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+// ❌ Incorrect
+<table className="w-full border-collapse">
+  <thead>
+    <tr>
+      <th className="border p-2">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td className="border p-2">Value</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+### ✅ Feedback and Notifications Rules
+- **Use `Toast`** for notifications (via `sonner`)
+- **Use `Alert`** for important messages
+- **Use `AlertDialog`** for confirmations
+- **Use `Tooltip`** for hover information
+
+```tsx
+// ✅ Correct
+import { toast } from 'sonner'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
+toast.success('Operation completed')
+
+<Alert>
+  <AlertDescription>Important message</AlertDescription>
+</Alert>
+
+// ❌ Incorrect
+<div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+  Success message
+</div>
+```
+
+## Component-Specific Guidelines
+
+### Form Validation
+- **Use `zod`** for schema validation
+- **Use `react-hook-form`** with shadcn form components
+- **Display errors** using `FormMessage` component
+
+### Responsive Design
+- **Use `ResponsiveModal`** for mobile-friendly modals
+- **Use responsive variants** in shadcn components
+- **Test on mobile** for all interactive components
+
+### Accessibility
+- **Always include `aria-label`** for interactive elements
+- **Use semantic HTML** through shadcn components
+- **Test keyboard navigation** for all components
+- **Include proper focus management** in modals
+
+### State Management
+- **Use controlled components** with shadcn
+- **Handle loading states** with `Skeleton` components
+- **Use proper error boundaries** for component failures
+
+## Migration Guidelines
+
+### From Custom Components
+1. **Identify shadcn equivalent**
+2. **Replace custom styling** with shadcn variants
+3. **Update imports** to use `@/components/ui/`
+4. **Test functionality** and accessibility
+5. **Remove custom CSS** classes
+
+### From HTML Elements
+1. **Replace `<button>`** with `Button`
+2. **Replace `<input>`** with `Input`
+3. **Replace `<select>`** with `Select`
+4. **Replace `<div>` containers** with `Card`
+5. **Update event handlers** to use shadcn props
+
+## Examples from Bookings Components
+
+### Filter Modal Pattern
+```tsx
+// ✅ Correct pattern from BookingFilterModal
+<ResponsiveModal open={open} onOpenChange={onOpenChange}>
+  <ResponsiveModalContent>
+    <ResponsiveModalHeader>
+      <ResponsiveModalTitle>Advanced Filters</ResponsiveModalTitle>
+    </ResponsiveModalHeader>
+    <div className="p-6 space-y-6">
+      {/* Filter fields using shadcn components */}
+    </div>
+    <div className="flex items-center justify-end space-x-4 p-6 border-t">
+      <Button onClick={handleApply}>Apply Filters</Button>
+      <Button variant="outline" onClick={handleReset}>Reset</Button>
+    </div>
+  </ResponsiveModalContent>
+</ResponsiveModal>
+```
+
+### Form Field Pattern
+```tsx
+// ✅ Correct pattern from FilterFieldRenderer
+<div className="space-y-2">
+  <Label htmlFor={config.key}>{config.label}</Label>
+  <Input
+    id={config.key}
+    placeholder={config.placeholder}
+    value={value}
+    onChange={onChange}
+  />
+</div>
+```
+
+### Action Button Pattern
+```tsx
+// ✅ Correct pattern from bookings page
+<Button
+  onClick={handleAction}
+  variant="outline"
+  size="sm"
+  className="flex items-center space-x-2"
+>
+  <Icon className="h-4 w-4" />
+  <span>Action</span>
+</Button>
+```
+
+## Enforcement
+
+### Code Review Checklist
+- [ ] All UI components imported from `@/components/ui/`
+- [ ] No custom button elements used
+- [ ] Proper shadcn variants applied
+- [ ] Accessibility attributes included
+- [ ] Responsive design considered
+- [ ] Loading states handled with `Skeleton`
+
+### Linting Rules
+- **ESLint rule**: Prevent direct HTML element usage for UI components
+- **TypeScript**: Enforce shadcn component types
+- **Prettier**: Maintain consistent formatting
+
+### Testing Requirements
+- **Component tests**: Verify shadcn component usage
+- **Accessibility tests**: Ensure ARIA compliance
+- **Mobile tests**: Verify responsive behavior
+- **Integration tests**: Test component interactions
+
+## Benefits
+
+### Consistency
+- **Unified design system** across the application
+- **Predictable component behavior**
+- **Reduced design debt**
+
+### Maintainability
+- **Centralized component updates**
+- **Reduced custom CSS**
+- **Easier theme changes**
+
+### Accessibility
+- **Built-in ARIA support**
+- **Keyboard navigation**
+- **Screen reader compatibility**
+
+### Performance
+- **Optimized bundle size**
+- **Tree-shaking support**
+- **Efficient re-renders**
+# Shadcn UI Component Rules
+
+## Core Principles
+
+### ✅ Always Use Shadcn Components
+- **Never create custom UI components** when shadcn equivalents exist
+- **Import from `@/components/ui/`** for all UI components
+- **Use shadcn variants and props** instead of custom styling
+
+### ✅ Button Component Rules
+- **Always use `Button` from `@/components/ui/button`**
+- **Use semantic variants**: `default`, `destructive`, `outline`, `secondary`, `ghost`, `link`
+- **Use size variants**: `default`, `sm`, `lg`, `icon`
+- **Never use custom button elements** (`<button>`, `<a>` for actions)
+- **Use `asChild` prop** when wrapping other elements
+
+```tsx
+// ✅ Correct
+import { Button } from '@/components/ui/button'
+
+<Button variant="outline" size="sm" onClick={handleClick}>
+  Click me
+</Button>
+
+<Button asChild>
+  <Link href="/path">Navigate</Link>
+</Button>
+
+// ❌ Incorrect
+<button className="px-4 py-2 bg-blue-500 text-white rounded">
+  Click me
+</button>
+```
+
+### ✅ Form Components Rules
+- **Use `Input`** for text inputs
+- **Use `Textarea`** for multi-line text
+- **Use `Select`** with `SelectContent`, `SelectItem`, `SelectTrigger`, `SelectValue`
+- **Use `Label`** for form labels
+- **Use `Checkbox`** for boolean inputs
+- **Use `RadioGroup`** for single-choice selections
+
+```tsx
+// ✅ Correct
+import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui'
+
+<div className="space-y-2">
+  <Label htmlFor="name">Name</Label>
+  <Input id="name" placeholder="Enter name" />
+</div>
+
+<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Select option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Option 1</SelectItem>
+  </SelectContent>
+</Select>
+
+// ❌ Incorrect
+<input type="text" className="border rounded px-3 py-2" />
+<select className="border rounded px-3 py-2">
+  <option>Option 1</option>
+</select>
+```
+
+### ✅ Modal and Dialog Rules
+- **Use `ResponsiveModal`** for modals (mobile-friendly)
+- **Use `Dialog`** for simple dialogs
+- **Use `Popover`** for dropdown menus and tooltips
+- **Use `Sheet`** for slide-out panels
+
+```tsx
+// ✅ Correct
+import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle } from '@/components/ui/responsive-modal'
+
+<ResponsiveModal open={open} onOpenChange={setOpen}>
+  <ResponsiveModalContent>
+    <ResponsiveModalHeader>
+      <ResponsiveModalTitle>Title</ResponsiveModalTitle>
+    </ResponsiveModalHeader>
+    {/* Content */}
+  </ResponsiveModalContent>
+</ResponsiveModal>
+
+// ❌ Incorrect
+<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+  <div className="bg-white rounded-lg p-6">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### ✅ Layout and Structure Rules
+- **Use `Card`** for content containers
+- **Use `Separator`** for visual dividers
+- **Use `Badge`** for status indicators
+- **Use `Avatar`** for user images
+- **Use `Skeleton`** for loading states
+
+```tsx
+// ✅ Correct
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <Badge variant="secondary">Status</Badge>
+  </CardContent>
+</Card>
+
+// ❌ Incorrect
+<div className="bg-white rounded-lg shadow border p-6">
+  <h3 className="text-lg font-semibold">Title</h3>
+  <span className="inline-block px-2 py-1 bg-gray-100 rounded text-sm">Status</span>
+</div>
+```
+
+### ✅ Data Display Rules
+- **Use `Table`** components for data tables
+- **Use `Tabs`** for tabbed interfaces
+- **Use `Accordion`** for collapsible content
+- **Use `Calendar`** for date selection
+- **Use `Progress`** for progress indicators
+
+```tsx
+// ✅ Correct
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Value</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+// ❌ Incorrect
+<table className="w-full border-collapse">
+  <thead>
+    <tr>
+      <th className="border p-2">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td className="border p-2">Value</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+### ✅ Feedback and Notifications Rules
+- **Use `Toast`** for notifications (via `sonner`)
+- **Use `Alert`** for important messages
+- **Use `AlertDialog`** for confirmations
+- **Use `Tooltip`** for hover information
+
+```tsx
+// ✅ Correct
+import { toast } from 'sonner'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
+toast.success('Operation completed')
+
+<Alert>
+  <AlertDescription>Important message</AlertDescription>
+</Alert>
+
+// ❌ Incorrect
+<div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+  Success message
+</div>
+```
+
+## Component-Specific Guidelines
+
+### Form Validation
+- **Use `zod`** for schema validation
+- **Use `react-hook-form`** with shadcn form components
+- **Display errors** using `FormMessage` component
+
+### Responsive Design
+- **Use `ResponsiveModal`** for mobile-friendly modals
+- **Use responsive variants** in shadcn components
+- **Test on mobile** for all interactive components
+
+### Accessibility
+- **Always include `aria-label`** for interactive elements
+- **Use semantic HTML** through shadcn components
+- **Test keyboard navigation** for all components
+- **Include proper focus management** in modals
+
+### State Management
+- **Use controlled components** with shadcn
+- **Handle loading states** with `Skeleton` components
+- **Use proper error boundaries** for component failures
+
+## Migration Guidelines
+
+### From Custom Components
+1. **Identify shadcn equivalent**
+2. **Replace custom styling** with shadcn variants
+3. **Update imports** to use `@/components/ui/`
+4. **Test functionality** and accessibility
+5. **Remove custom CSS** classes
+
+### From HTML Elements
+1. **Replace `<button>`** with `Button`
+2. **Replace `<input>`** with `Input`
+3. **Replace `<select>`** with `Select`
+4. **Replace `<div>` containers** with `Card`
+5. **Update event handlers** to use shadcn props
+
+## Examples from Bookings Components
+
+### Filter Modal Pattern
+```tsx
+// ✅ Correct pattern from BookingFilterModal
+<ResponsiveModal open={open} onOpenChange={onOpenChange}>
+  <ResponsiveModalContent>
+    <ResponsiveModalHeader>
+      <ResponsiveModalTitle>Advanced Filters</ResponsiveModalTitle>
+    </ResponsiveModalHeader>
+    <div className="p-6 space-y-6">
+      {/* Filter fields using shadcn components */}
+    </div>
+    <div className="flex items-center justify-end space-x-4 p-6 border-t">
+      <Button onClick={handleApply}>Apply Filters</Button>
+      <Button variant="outline" onClick={handleReset}>Reset</Button>
+    </div>
+  </ResponsiveModalContent>
+</ResponsiveModal>
+```
+
+### Form Field Pattern
+```tsx
+// ✅ Correct pattern from FilterFieldRenderer
+<div className="space-y-2">
+  <Label htmlFor={config.key}>{config.label}</Label>
+  <Input
+    id={config.key}
+    placeholder={config.placeholder}
+    value={value}
+    onChange={onChange}
+  />
+</div>
+```
+
+### Action Button Pattern
+```tsx
+// ✅ Correct pattern from bookings page
+<Button
+  onClick={handleAction}
+  variant="outline"
+  size="sm"
+  className="flex items-center space-x-2"
+>
+  <Icon className="h-4 w-4" />
+  <span>Action</span>
+</Button>
+```
+
+## Enforcement
+
+### Code Review Checklist
+- [ ] All UI components imported from `@/components/ui/`
+- [ ] No custom button elements used
+- [ ] Proper shadcn variants applied
+- [ ] Accessibility attributes included
+- [ ] Responsive design considered
+- [ ] Loading states handled with `Skeleton`
+
+### Linting Rules
+- **ESLint rule**: Prevent direct HTML element usage for UI components
+- **TypeScript**: Enforce shadcn component types
+- **Prettier**: Maintain consistent formatting
+
+### Testing Requirements
+- **Component tests**: Verify shadcn component usage
+- **Accessibility tests**: Ensure ARIA compliance
+- **Mobile tests**: Verify responsive behavior
+- **Integration tests**: Test component interactions
+
+## Benefits
+
+### Consistency
+- **Unified design system** across the application
+- **Predictable component behavior**
+- **Reduced design debt**
+
+### Maintainability
+- **Centralized component updates**
+- **Reduced custom CSS**
+- **Easier theme changes**
+
+### Accessibility
+- **Built-in ARIA support**
+- **Keyboard navigation**
+- **Screen reader compatibility**
+
+### Performance
+- **Optimized bundle size**
+- **Tree-shaking support**
+- **Efficient re-renders**

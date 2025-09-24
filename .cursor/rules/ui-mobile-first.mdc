@@ -1,0 +1,311 @@
+---
+description: Mobile-First UI Rules for Multi-Tenant SaaS - Enforce mobile-first design with theme tokens and shadcn/ui
+globs:
+alwaysApply: true
+---
+
+# Mobile-First UI Rules for Multi-Tenant SaaS
+
+## 🎯 **Core Principle: Mobile-First + Theme-Aware Design**
+
+**ALWAYS** design mobile-first with semantic theme tokens. Never hardcode colors or bypass the multi-tenant theming system.
+
+## 🚫 **Critical Anti-Patterns to Avoid**
+
+### **❌ Hardcoded Colors (Breaks Multi-Tenancy)**
+
+```tsx
+// ❌ NEVER - Breaks tenant theming
+<div className="bg-blue-600 text-white border-gray-200">
+  Hardcoded colors
+</div>
+
+// ✅ ALWAYS - Use semantic theme tokens
+<div className="bg-primary text-primary-foreground border-border">
+  Theme-aware colors
+</div>
+```
+
+### **❌ Raw HTML Elements (Inconsistent Design)**
+
+```tsx
+// ❌ NEVER - Use raw HTML for UI
+<button className="px-4 py-2 bg-blue-500 text-white rounded">
+  Submit
+</button>
+
+// ✅ ALWAYS - Use shadcn/ui components
+<Button variant="default" size="default">
+  Submit
+</Button>
+```
+
+### **❌ Desktop-First Breakpoints**
+
+```tsx
+// ❌ NEVER - Desktop first
+<div className="p-8 md:p-6 sm:p-4">
+  <h1 className="text-4xl md:text-3xl sm:text-2xl">Title</h1>
+</div>
+
+// ✅ ALWAYS - Mobile first
+<div className="p-4 md:p-6 lg:p-8">
+  <h1 className="text-xl md:text-2xl lg:text-3xl">Title</h1>
+</div>
+```
+
+### **❌ Tiny Touch Targets (Mobile UX Failure)**
+
+```tsx
+// ❌ NEVER - Too small for mobile
+<Button className="h-8 px-2 text-sm">Too Small</Button>
+
+// ✅ ALWAYS - Minimum 44px touch targets
+<Button className="h-11 md:h-10 px-4 min-w-[44px]">Touch Friendly</Button>
+```
+
+## 🎨 **Required Multi-Tenant Patterns**
+
+### **Theme Token Usage**
+
+```tsx
+// ✅ Use CSS custom properties for dynamic theming
+<div className="bg-primary text-primary-foreground">
+  Adapts to tenant theme automatically
+</div>
+
+// ✅ Use semantic shadcn/ui variants
+<Button variant="outline">Themed Button</Button>
+<Card className="border-border bg-card">Themed Card</Card>
+```
+
+### **Typography with Theme Fonts**
+
+```tsx
+// ✅ Use theme-aware font classes
+<h1 className="font-heading text-2xl md:text-3xl lg:text-4xl">
+  Heading with tenant font
+</h1>
+
+<p className="font-body text-sm md:text-base">
+  Body text with tenant font
+</p>
+```
+
+## 📱 **Mobile-First Implementation**
+
+### **Responsive Grid Patterns**
+
+```tsx
+// ✅ Mobile-first responsive grid
+<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
+  <Card className='p-4 md:p-6'>{/* Content */}</Card>
+</div>
+```
+
+### **Touch-Friendly Interactions**
+
+```tsx
+// ✅ Minimum 44px touch targets
+<Button className="h-11 md:h-10 px-4 w-full md:w-auto">
+  Mobile-friendly button
+</Button>
+
+<Input className="h-11 md:h-10 px-4 text-base" />
+```
+
+### **Mobile-First Data Display**
+
+```tsx
+// ✅ Cards on mobile, table on desktop
+<div className='space-y-4 md:space-y-0'>
+  {/* Mobile: Card layout */}
+  <div className='md:hidden space-y-4'>
+    {items.map(item => (
+      <Card key={item.id} className='p-4'>
+        <div className='space-y-2'>
+          <h3 className='font-semibold'>{item.name}</h3>
+          <p className='text-sm text-muted-foreground'>{item.description}</p>
+          <Button size='sm' className='w-full'>
+            View Details
+          </Button>
+        </div>
+      </Card>
+    ))}
+  </div>
+
+  {/* Desktop: Table layout */}
+  <div className='hidden md:block'>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead>Description</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {items.map(item => (
+          <TableRow key={item.id}>
+            <TableCell>{item.name}</TableCell>
+            <TableCell>{item.description}</TableCell>
+            <TableCell>
+              <Button size='sm'>View</Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+</div>
+```
+
+## 🏗️ **SSR/ISR-Safe Patterns**
+
+### **Client-Safe Responsive Hooks**
+
+```tsx
+// ✅ Use useEffect for client-only responsive logic
+const [isMobile, setIsMobile] = useState(false)
+
+useEffect(() => {
+  const checkMobile = () => setIsMobile(window.innerWidth < 768)
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+  return () => window.removeEventListener('resize', checkMobile)
+}, [])
+
+// ✅ Or use CSS-only responsive patterns
+<div className="block md:hidden">Mobile only</div>
+<div className="hidden md:block">Desktop only</div>
+```
+
+### **Theme-Safe Server Rendering**
+
+```tsx
+// ✅ Ensure theme tokens work in SSR
+<div className='bg-background text-foreground border-border'>
+  Server-safe themed content
+</div>
+```
+
+## ✅ **Required Component Patterns**
+
+### **shadcn/ui Component Usage**
+
+```tsx
+// ✅ Always use shadcn/ui for UI components
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+
+// ✅ Proper form pattern with mobile-first sizing
+;<form className='space-y-6 md:space-y-4'>
+  <div className='space-y-2'>
+    <Label htmlFor='email'>Email</Label>
+    <Input
+      id='email'
+      type='email'
+      className='h-11 md:h-10'
+      placeholder='Enter your email'
+    />
+  </div>
+  <Button type='submit' className='w-full md:w-auto h-11 md:h-10'>
+    Submit
+  </Button>
+</form>
+```
+
+### **Responsive Modal Pattern**
+
+```tsx
+// ✅ Mobile-first modal with ResponsiveModal
+<ResponsiveModal open={open} onOpenChange={setOpen}>
+  <ResponsiveModalContent className='p-4 md:p-6'>
+    <ResponsiveModalHeader>
+      <ResponsiveModalTitle className='text-xl md:text-2xl'>
+        Modal Title
+      </ResponsiveModalTitle>
+    </ResponsiveModalHeader>
+    <div className='space-y-4'>{/* Content */}</div>
+  </ResponsiveModalContent>
+</ResponsiveModal>
+```
+
+## 🎯 **Validation Checklist**
+
+### **Multi-Tenant Compliance**
+
+- [ ] Uses semantic theme tokens (`bg-primary`, `text-foreground`, etc.)
+- [ ] No hardcoded colors (`bg-blue-600`, `text-gray-500`, etc.)
+- [ ] Uses `font-heading` and `font-body` for typography
+- [ ] Works across all tenant themes (Ocean, Fire, Forest)
+
+### **Mobile-First Compliance**
+
+- [ ] Touch targets minimum 44px (`h-11` on mobile)
+- [ ] Progressive enhancement (mobile → tablet → desktop)
+- [ ] Text minimum 16px on mobile (`text-base` not `text-sm`)
+- [ ] No horizontal scrolling on mobile
+
+### **Component Compliance**
+
+- [ ] Uses shadcn/ui components exclusively
+- [ ] No raw HTML elements for UI
+- [ ] Proper responsive variants applied
+- [ ] SSR/ISR safe (no client-only logic in render)
+
+## 🚀 **Performance Considerations**
+
+### **Mobile-First Loading**
+
+```tsx
+// ✅ Optimize for mobile loading
+<Image
+  src={src}
+  alt={alt}
+  className='w-full h-auto'
+  sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+  priority={priority}
+/>
+```
+
+### **Progressive Enhancement**
+
+```tsx
+// ✅ Core functionality works without JavaScript
+<Button type='submit' className='w-full md:w-auto'>
+  Works without JS
+</Button>
+```
+
+## 📏 **Breakpoint Reference**
+
+- **Mobile**: `320px - 767px` (default, no prefix)
+- **Tablet**: `768px - 1023px` (`md:`)
+- **Desktop**: `1024px+` (`lg:`, `xl:`, `2xl:`)
+
+## 🎨 **Theme Token Reference**
+
+```css
+/* Core theme tokens available across all tenants */
+--color-primary         /* Main brand color */
+--color-background      /* Page background */
+--color-foreground      /* Text color */
+--color-muted          /* Muted text/backgrounds */
+--color-border         /* Border color */
+--font-heading         /* Heading font family */
+--font-body           /* Body font family */
+```
+
+## 💡 **Key Principles**
+
+1. **Mobile-first is mandatory** - Start with mobile, enhance for larger screens
+2. **Theme tokens are required** - Never hardcode colors or fonts
+3. **shadcn/ui components only** - No raw HTML for UI elements
+4. **44px minimum touch targets** - Essential for mobile usability
+5. **SSR/ISR compatibility** - All patterns must work server-side
+6. **Multi-tenant aware** - Design must work across all tenant themes
+
+Remember: **Build for mobile-first, theme-aware, and tenant-scalable design.**

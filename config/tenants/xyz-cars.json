@@ -1,0 +1,46 @@
+{
+  "id": "xyz-cars",
+  "name": "XYZ Cars",
+  "theme": "forest",
+  "content": {
+    "hero": {
+      "headline": "XYZ Cars - Your Journey Starts Here",
+      "description": "Affordable and reliable car rentals for every occasion. Book now and drive with confidence."
+    },
+    "about": {
+      "title": "About XYZ Cars",
+      "content": "XYZ Cars is your trusted partner for affordable car rentals. We believe that everyone deserves access to reliable transportation, which is why we offer competitive rates without compromising on quality. Our friendly team is here to help you find the perfect vehicle for your needs."
+    },
+    "contact": {
+      "phone": "+1-555-0456",
+      "email": "hello@xyz-cars.com",
+      "address": "789 Auto Lane, Car City, CC 98765"
+    }
+  },
+  "metadata": {
+    "title": "XYZ Cars - Affordable Car Rentals",
+    "description": "Affordable and reliable car rentals from XYZ Cars. Book now and drive with confidence.",
+    "seo": {
+      "keywords": [
+        "affordable car rental",
+        "XYZ cars",
+        "budget vehicles",
+        "cheap car hire",
+        "economy rental"
+      ],
+      "favicon": "/favicons/xyz-cars.ico",
+      "openGraph": {
+        "image": "/images/xyz-cars-og.jpg",
+        "type": "website",
+        "locale": "en_US"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "site": "@xyzcars",
+        "creator": "@xyzcars"
+      },
+      "canonicalBase": "https://xyz-cars.com",
+      "robots": "index, follow"
+    }
+  }
+}

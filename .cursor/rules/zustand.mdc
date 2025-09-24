@@ -1,0 +1,464 @@
+# Zustand State Management Rules
+
+## 🗃️ **Core Architecture**
+
+### **Slice-Based Store Pattern**
+
+```typescript
+// lib/stores/store.ts
+export const createAppStore = (initialState?: Partial<StoreState>) => {
+  return createStore<StoreState>()(
+    persist(
+      (set, get, api) => ({
+        ...createAuthSlice(set, get, api),
+        ...createUserSlice(set, get, api),
+        // Future slices: UI, Cart, etc.
+      }),
+      {
+        name: 'storefront-store',
+        partialize: state => ({
+          authKey: state.authKey,
+          userId: state.userId,
+          isAuthenticated: state.isAuthenticated,
+        }),
+        skipHydration: true, // Manual hydration for SSR
+      }
+    )
+  )
+}
+```
+
+### **Slice Structure**
+
+```typescript
+// lib/stores/slices/auth.slice.ts
+export interface AuthState {
+  // Core auth state
+  authKey: string | null
+  userId: string | null
+  isAuthenticated: boolean
+  otpRequestId: string | null
+
+  // Consolidated loading state
+  isLoading: boolean
+
+  // Error state
+  error: string | null
+
+  // Actions
+  setAuthData: (data: { authKey: string; userId: string }) => void
+  setOtpRequestId: (requestId: string | null) => void
+  setLoading: (isLoading: boolean) => void
+  setError: (error: string | null) => void
+  clearAuth: () => void
+}
+
+export function createAuthSlice(
+  set: SetState<StoreState>,
+  get: GetState<StoreState>,
+  api: StoreApi<StoreState>
+): AuthState {
+  return {
+    // Initial state
+    authKey: null,
+    userId: null,
+    isAuthenticated: false,
+    otpRequestId: null,
+    isLoading: false,
+    error: null,
+
+    // Actions
+    setAuthData: data =>
+      set({
+        authKey: data.authKey,
+        userId: data.userId,
+        isAuthenticated: true,
+        error: null,
+      }),
+
+    setOtpRequestId: requestId => set({ otpRequestId: requestId }),
+
+    setLoading: isLoading => set({ isLoading }),
+
+    setError: error => set({ error }),
+
+    clearAuth: () =>
+      set({
+        authKey: null,
+        userId: null,
+        isAuthenticated: false,
+        otpRequestId: null,
+        error: null,
+      }),
+  }
+}
+```
+
+## 🎯 **Consolidated Loading States**
+
+### **Single Loading State Per Domain**
+
+```typescript
+// ✅ Good - single loading state for all auth operations
+interface AuthState {
+  isLoading: boolean // One loading state for all auth operations
+}
+
+// ❌ Avoid - multiple loading states
+interface AuthState {
+  isLoggingIn: boolean
+  isSendingOtp: boolean
+  isVerifyingOtp: boolean
+}
+```
+
+### **Component Usage**
+
+```typescript
+// ✅ Simple component logic
+function LoginComponent() {
+  const { isLoading } = useAuth()
+
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  return (
+    <div>
+      <button disabled={isLoading}>Send OTP</button>
+      <button disabled={isLoading}>Verify OTP</button>
+    </div>
+  )
+}
+```
+
+## 🔄 **SSR/SSG Compatibility**
+
+### **Store Provider Pattern**
+
+```typescript
+// lib/providers/StoreProvider.tsx
+export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const [store] = useState(() => createAppStore())
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    // Manual hydration for SSR compatibility
+    if (store.persist.rehydrate) {
+      store.persist.rehydrate()
+    }
+    setIsHydrated(true)
+  }, [store])
+
+  if (!isHydrated) {
+    return <div>Loading...</div>
+  }
+
+  return (
+    <StoreContext.Provider value={store}>
+      {children}
+    </StoreContext.Provider>
+  )
+}
+```
+
+### **useShallow Optimization**
+
+```typescript
+// ✅ Use useShallow to prevent unnecessary re-renders
+export const useUser = () => {
+  const store = useContext(StoreContext)
+
+  if (!store) {
+    throw new Error('useUser must be used within StoreProvider')
+  }
+
+  return useStore(
+    store,
+    useShallow(state => ({
+      profile: state.profile,
+      isLoading: state.isLoading,
+      error: state.error,
+      setProfile: state.setProfile,
+      updateProfile: state.updateProfile,
+      clearProfile: state.clearProfile,
+    }))
+  )
+}
+```
+
+## 🪝 **Hook Patterns**
+
+### **Custom Hook Structure**
+
+```typescript
+// lib/providers/StoreProvider.tsx
+export const useAuth = (): AuthHookResult => {
+  const store = useContext(StoreContext)
+
+  if (!store) {
+    throw new Error('useAuth must be used within StoreProvider')
+  }
+
+  return useStore(
+    store,
+    useShallow(state => ({
+      // Auth state
+      authKey: state.authKey,
+      userId: state.userId,
+      isAuthenticated: state.isAuthenticated,
+      otpRequestId: state.otpRequestId,
+      isLoading: state.isLoading,
+      error: state.error,
+
+      // Auth actions
+      setAuthData: state.setAuthData,
+      setOtpRequestId: state.setOtpRequestId,
+      setLoading: state.setLoading,
+      setError: state.setError,
+      clearAuth: state.clearAuth,
+
+      // Computed properties
+      hasValidSession: () => !!state.authKey && !!state.userId,
+    }))
+  )
+}
+```
+
+### **React Query Integration**
+
+```typescript
+// Host-consumer pattern
+export function useAuth() {
+  const sendOtpMutation = useSendOtp()
+  const verifyOtpMutation = useVerifyOtp()
+
+  // Consolidated loading state
+  const isLoading = sendOtpMutation.isPending || verifyOtpMutation.isPending
+
+  return {
+    sendOtp: sendOtpMutation.mutate,
+    verifyOtp: verifyOtpMutation.mutate,
+    isLoading, // Single loading state
+  }
+}
+```
+
+## 🧪 **Testing Patterns**
+
+### **Store Testing**
+
+```typescript
+// __tests__/stores/auth.slice.test.ts
+import { renderHook, act } from '@testing-library/react-hooks'
+import { createAuthSlice } from '@/lib/stores/slices/auth.slice'
+
+describe('Auth Slice', () => {
+  let setState: jest.Mock
+  let getState: jest.Mock
+  let api: any
+
+  beforeEach(() => {
+    setState = jest.fn()
+    getState = jest.fn()
+    api = {}
+  })
+
+  test('setAuthData updates auth state', () => {
+    const authSlice = createAuthSlice(setState, getState, api)
+
+    act(() => {
+      authSlice.setAuthData({ authKey: 'test-key', userId: 'test-user' })
+    })
+
+    expect(setState).toHaveBeenCalledWith({
+      authKey: 'test-key',
+      userId: 'test-user',
+      isAuthenticated: true,
+      error: null,
+    })
+  })
+
+  test('setLoading updates loading state', () => {
+    const authSlice = createAuthSlice(setState, getState, api)
+
+    act(() => {
+      authSlice.setLoading(true)
+    })
+
+    expect(setState).toHaveBeenCalledWith({ isLoading: true })
+  })
+})
+```
+
+### **Hook Testing**
+
+```typescript
+// __tests__/hooks/useAuth.test.ts
+import { renderHook } from '@testing-library/react-hooks'
+import { useAuth } from '@/lib/providers/StoreProvider'
+import { StoreProvider } from '@/lib/providers/StoreProvider'
+
+describe('useAuth', () => {
+  test('returns auth state and actions', () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: StoreProvider,
+    })
+
+    expect(result.current.isAuthenticated).toBe(false)
+    expect(result.current.setAuthData).toBeDefined()
+    expect(result.current.setLoading).toBeDefined()
+  })
+})
+```
+
+## 🚀 **Performance Optimization**
+
+### **Selective Persistence**
+
+```typescript
+// Only persist essential auth data
+persist(
+  (set, get, api) => ({
+    ...createAuthSlice(set, get, api),
+    ...createUserSlice(set, get, api),
+  }),
+  {
+    name: 'storefront-store',
+    partialize: state => ({
+      // Only persist auth data, not loading states or errors
+      authKey: state.authKey,
+      userId: state.userId,
+      isAuthenticated: state.isAuthenticated,
+    }),
+    skipHydration: true,
+  }
+)
+```
+
+### **Memoized Selectors**
+
+```typescript
+// ✅ Use memoized selectors for expensive computations
+const useUserDisplayName = () => {
+  const store = useContext(StoreContext)
+
+  return useStore(
+    store,
+    useMemo(
+      () => (state: StoreState) => {
+        if (!state.profile) return 'Guest'
+        return `${state.profile.firstName} ${state.profile.lastName}`
+      },
+      []
+    )
+  )
+}
+```
+
+## 🔧 **Error Handling**
+
+### **Error State Management**
+
+```typescript
+// lib/stores/slices/auth.slice.ts
+export function createAuthSlice(
+  set: SetState<StoreState>,
+  get: GetState<StoreState>,
+  api: StoreApi<StoreState>
+): AuthState {
+  return {
+    // ... other state and actions
+
+    setError: error =>
+      set({
+        error,
+        isLoading: false, // Clear loading when error occurs
+      }),
+
+    clearError: () => set({ error: null }),
+  }
+}
+```
+
+### **Error Boundaries**
+
+```typescript
+// components/ErrorBoundary.tsx
+'use client'
+
+export function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  const { error, clearError } = useAuth()
+
+  if (error) {
+    return (
+      <div className="error-boundary">
+        <p>Something went wrong: {error}</p>
+        <button onClick={clearError}>Try Again</button>
+      </div>
+    )
+  }
+
+  return children
+}
+```
+
+## 🎯 **Best Practices**
+
+### **Do's**
+
+- ✅ **Use slice-based architecture** for modular state management
+- ✅ **Implement consolidated loading states** for simpler component logic
+- ✅ **Use useShallow** to prevent unnecessary re-renders
+- ✅ **Manual hydration** for SSR compatibility
+- ✅ **Selective persistence** - only persist essential data
+- ✅ **Memoized selectors** for expensive computations
+- ✅ **Proper error handling** with error states
+
+### **Don'ts**
+
+- ❌ **Don't create global stores** - use per-request stores
+- ❌ **Avoid multiple loading states** per domain
+- ❌ **Don't persist sensitive data** in client storage
+- ❌ **Avoid complex state logic** in selectors
+- ❌ **Don't use Zustand in Server Components**
+
+## 🔄 **Migration Patterns**
+
+### **From Multiple Loading States**
+
+```typescript
+// Before
+interface AuthState {
+  isLoggingIn: boolean
+  isSendingOtp: boolean
+  isVerifyingOtp: boolean
+}
+
+// After
+interface AuthState {
+  isLoading: boolean // Single loading state
+}
+```
+
+### **From Global Store**
+
+```typescript
+// Before
+const useAuthStore = create<AuthState>(set => ({
+  // Global store
+}))
+
+// After
+const createAppStore = () =>
+  createStore<StoreState>()(
+    persist(
+      (set, get, api) => ({
+        ...createAuthSlice(set, get, api),
+      }),
+      { skipHydration: true }
+    )
+  )
+```
+
+Follow these patterns consistently to maintain a robust, performant state management system that works seamlessly with Next.js SSR/SSG and provides excellent developer experience.

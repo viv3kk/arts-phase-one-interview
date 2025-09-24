@@ -1,0 +1,46 @@
+{
+  "id": "xyz-rental",
+  "name": "XYZ Rental",
+  "theme": "forest",
+  "content": {
+    "hero": {
+      "headline": "XYZ Rental - Eco-Friendly Car Rentals",
+      "description": "Sustainable and reliable car rentals for the environmentally conscious traveler. Drive green with confidence."
+    },
+    "about": {
+      "title": "About XYZ Rental",
+      "content": "XYZ Rental is committed to providing eco-friendly transportation solutions. We believe in sustainable travel and offer a fleet of hybrid and electric vehicles to reduce environmental impact while maintaining the quality service you expect."
+    },
+    "contact": {
+      "phone": "+1-555-0789",
+      "email": "hello@xyz-rental.com",
+      "address": "456 Green Drive, Eco City, EC 54321"
+    }
+  },
+  "metadata": {
+    "title": "XYZ Rental - Eco-Friendly Car Rentals",
+    "description": "Sustainable car rentals with hybrid and electric vehicles. Drive green with XYZ Rental.",
+    "seo": {
+      "keywords": [
+        "eco-friendly car rental",
+        "XYZ rental",
+        "green vehicles",
+        "sustainable transport",
+        "electric car hire"
+      ],
+      "favicon": "/favicons/xyz-rental.ico",
+      "openGraph": {
+        "image": "/images/xyz-rental-og.jpg",
+        "type": "website",
+        "locale": "en_US"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "site": "@xyzrental",
+        "creator": "@xyzrental"
+      },
+      "canonicalBase": "https://xyz-rental.com",
+      "robots": "index, follow"
+    }
+  }
+}

@@ -1,0 +1,456 @@
+# Multi-Tenant Architecture Rules
+
+## 🏢 **Core Principles**
+
+### **Tenant Isolation**
+
+- **Data isolation**: Each tenant's data must be completely separated
+- **Configuration isolation**: Tenant-specific configs in separate files
+- **Theme isolation**: Dynamic theming per tenant
+- **API isolation**: Tenant-aware API requests with proper headers
+
+### **Dynamic Configuration**
+
+- **JSON-based configs**: Store tenant configs in `config/tenants/`
+- **Runtime resolution**: Load configs dynamically based on subdomain
+- **Fallback system**: Always provide default tenant for error handling
+- **Validation**: Validate all tenant configurations
+
+## 🎨 **Theme System**
+
+### **Semantic Design Tokens**
+
+```css
+/* Always use semantic classes that adapt to tenant themes */
+:root {
+  --color-primary: #2563eb; /* Ocean theme */
+  --color-secondary: #64748b;
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+}
+```
+
+### **Component Theming**
+
+```tsx
+// ✅ Correct - automatic theme adaptation
+<Button className="bg-primary text-primary-foreground">
+  Themed Button
+</Button>
+
+// ✅ shadcn/ui components automatically themed
+<Card>Themed Card</Card>
+
+// ❌ Avoid - hardcoded colors
+<button className="bg-blue-600 text-white">
+  Hardcoded Button
+</button>
+```
+
+### **Theme Access in Components**
+
+```tsx
+import { useAppliedTheme } from '@/components/providers/ThemeProvider'
+
+function MyComponent() {
+  const theme = useAppliedTheme()
+  return <div style={{ color: theme.primary }}>Dynamic theme!</div>
+}
+```
+
+## 🏗️ **Tenant Detection**
+
+### **Middleware Pattern**
+
+```typescript
+// middleware.ts
+export function middleware(request: NextRequest) {
+  const hostname = request.headers.get('host') || ''
+  const tenantId = extractTenantFromHostname(hostname)
+
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-tenant-id', tenantId)
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
+}
+```
+
+### **Tenant Resolution**
+
+```typescript
+// lib/tenant.ts
+export function getTenantConfig(hostname: string): TenantConfig {
+  const tenantId = extractTenantFromHostname(hostname)
+  const config = loadTenantConfig(tenantId)
+
+  if (!config) {
+    return loadDefaultConfig()
+  }
+
+  return config
+}
+```
+
+## 📁 **File Organization**
+
+### **Tenant Configuration Structure**
+
+```
+config/
+├── tenants.json                 # Tenant registry
+└── tenants/
+    ├── default.json            # Fallback configuration
+    ├── abc-rental.json         # ABC Car Rentals
+    ├── xyz-cars.json          # XYZ Cars
+    └── test-rental.json       # Test tenant
+```
+
+### **Tenant Config Schema**
+
+```typescript
+interface TenantConfig {
+  id: string
+  name: string
+  theme: 'ocean' | 'fire' | 'forest'
+  content: {
+    hero: {
+      headline: string
+      description: string
+    }
+    about: {
+      title: string
+      content: string
+    }
+    contact: {
+      phone: string
+      email: string
+      address: string
+    }
+  }
+  metadata: {
+    title: string
+    description: string
+  }
+}
+```
+
+## 🔧 **Service Layer Integration**
+
+### **Tenant-Aware API Client**
+
+```typescript
+// lib/services/base/api-client.ts
+export class ApiClient {
+  constructor(private tenantId: string) {}
+
+  async request<T>(config: ApiConfig): Promise<T> {
+    const headers = {
+      ...config.headers,
+      'x-tenant-id': this.tenantId,
+    }
+
+    return await this.httpClient.request({
+      ...config,
+      headers,
+    })
+  }
+}
+```
+
+### **Service Factory Pattern**
+
+```typescript
+// lib/services/factory.ts
+export function createTenantAwareService(tenantId: string) {
+  const apiClient = new ApiClient(tenantId)
+
+  return {
+    authService: new AuthService(apiClient),
+    userService: new UserService(apiClient),
+    bookingService: new BookingService(apiClient),
+  }
+}
+```
+
+## 🧩 **Component Patterns**
+
+### **Tenant Provider**
+
+```tsx
+// components/providers/TenantProvider.tsx
+export function TenantProvider({
+  children,
+  initialConfig,
+}: TenantProviderProps) {
+  return (
+    <TenantContext.Provider value={initialConfig}>
+      {children}
+    </TenantContext.Provider>
+  )
+}
+```
+
+### **Tenant-Aware Components**
+
+```tsx
+// ✅ Good - tenant-aware component
+export function HeroSection() {
+  const config = useTenantConfig()
+
+  return (
+    <section className='bg-primary text-primary-foreground'>
+      <h1>{config.content.hero.headline}</h1>
+      <p>{config.content.hero.description}</p>
+    </section>
+  )
+}
+
+// ✅ Good - server component with tenant data
+export default async function HomePage() {
+  const headersList = await headers()
+  const tenantId = headersList.get('x-tenant-id')
+  const config = await getTenantConfig(tenantId)
+
+  return (
+    <TenantProvider initialConfig={config}>
+      <HeroSection />
+    </TenantProvider>
+  )
+}
+```
+
+## 🎯 **SEO & Metadata**
+
+### **Dynamic Metadata**
+
+```typescript
+// app/layout.tsx
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers()
+  const tenantId = headersList.get('x-tenant-id')
+  const config = await getTenantConfig(tenantId)
+
+  return {
+    title: config.metadata.title,
+    description: config.metadata.description,
+    openGraph: {
+      title: config.metadata.title,
+      description: config.metadata.description,
+    },
+  }
+}
+```
+
+### **Dynamic Robots.txt**
+
+```typescript
+// app/robots.txt/route.ts
+export async function GET() {
+  const headersList = await headers()
+  const tenantId = headersList.get('x-tenant-id')
+  const config = await getTenantConfig(tenantId)
+
+  const robotsTxt = `
+User-agent: *
+Allow: /
+
+Sitemap: ${config.domain}/sitemap.xml
+  `.trim()
+
+  return new Response(robotsTxt, {
+    headers: { 'Content-Type': 'text/plain' },
+  })
+}
+```
+
+## 🧪 **Testing Patterns**
+
+### **Multi-Tenant Testing**
+
+```typescript
+// __tests__/tenant-config.test.ts
+describe('Tenant Configuration', () => {
+  test('all tenants have valid configurations', () => {
+    const tenants = getAllTenants()
+
+    tenants.forEach(tenant => {
+      const config = loadTenantConfig(tenant.id)
+      expect(config).toBeDefined()
+      expect(config.theme).toBeOneOf(['ocean', 'fire', 'forest'])
+      expect(config.content.hero.headline).toBeDefined()
+    })
+  })
+})
+```
+
+### **Theme Testing**
+
+```typescript
+// __tests__/theme-system.test.ts
+describe('Theme System', () => {
+  test('components adapt to different themes', () => {
+    const themes = ['ocean', 'fire', 'forest']
+
+    themes.forEach(theme => {
+      const { container } = render(
+        <ThemeProvider theme={theme}>
+          <Button>Themed Button</Button>
+        </ThemeProvider>
+      )
+
+      expect(container.firstChild).toHaveClass('bg-primary')
+    })
+  })
+})
+```
+
+## 🚀 **Performance Considerations**
+
+### **Tenant-Specific Caching**
+
+```typescript
+// lib/cache/tenant-cache.ts
+export class TenantCache {
+  private cache = new Map<string, TenantConfig>()
+
+  async getTenantConfig(tenantId: string): Promise<TenantConfig> {
+    if (this.cache.has(tenantId)) {
+      return this.cache.get(tenantId)!
+    }
+
+    const config = await loadTenantConfig(tenantId)
+    this.cache.set(tenantId, config)
+
+    return config
+  }
+}
+```
+
+### **Bundle Optimization**
+
+```typescript
+// next.config.js
+module.exports = {
+  experimental: {
+    // Optimize for multi-tenant
+    optimizePackageImports: ['@/components/ui'],
+  },
+  // Tenant-specific optimizations
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'x-tenant-id',
+            value: '${tenantId}',
+          },
+        ],
+      },
+    ]
+  },
+}
+```
+
+## 🔒 **Security Considerations**
+
+### **Tenant Validation**
+
+```typescript
+// lib/security/tenant-validation.ts
+export function validateTenantAccess(
+  tenantId: string,
+  userTenantId: string
+): boolean {
+  // Ensure users can only access their own tenant data
+  return tenantId === userTenantId
+}
+```
+
+### **Data Isolation**
+
+```typescript
+// lib/database/tenant-isolation.ts
+export function createTenantAwareQuery(tenantId: string, query: string) {
+  return `${query} WHERE tenant_id = '${tenantId}'`
+}
+```
+
+## 📊 **Monitoring & Analytics**
+
+### **Tenant-Specific Metrics**
+
+```typescript
+// lib/analytics/tenant-analytics.ts
+export function trackTenantEvent(
+  tenantId: string,
+  event: string,
+  data?: Record<string, any>
+) {
+  analytics.track(event, {
+    tenantId,
+    ...data,
+    timestamp: Date.now(),
+  })
+}
+```
+
+## 🎯 **Best Practices**
+
+### **Do's**
+
+- ✅ **Always use semantic classes** for theme adaptation
+- ✅ **Validate tenant configurations** at build time
+- ✅ **Implement proper fallbacks** for missing tenants
+- ✅ **Use tenant-aware API clients** for all requests
+- ✅ **Test across all tenant themes** during development
+- ✅ **Cache tenant configurations** for performance
+- ✅ **Implement proper error boundaries** for tenant-specific errors
+
+### **Don'ts**
+
+- ❌ **Never hardcode colors** in components
+- ❌ **Don't share data** between tenants
+- ❌ **Avoid tenant-specific code** in shared components
+- ❌ **Don't cache sensitive tenant data** in client-side storage
+- ❌ **Avoid complex tenant logic** in UI components
+
+## 🔄 **Development Workflow**
+
+### **Adding New Tenants**
+
+1. Create tenant config in `config/tenants/new-tenant.json`
+2. Add to tenant registry in `config/tenants.json`
+3. Test with `http://new-tenant.localhost:3000`
+4. Validate configuration with `npm run test:config`
+
+### **Adding New Themes**
+
+1. Define theme in `lib/themes/themes.ts`
+2. Update TypeScript types in `lib/types/tenant.ts`
+3. Test theme across all components
+4. Update documentation
+
+### **Multi-Tenant Testing**
+
+```bash
+# Test all tenants
+npm run test:tenants
+
+# Test specific tenant
+npm run test:tenant -- --tenant=abc-rental
+
+# Validate configurations
+npm run test:config
+```
+
+Follow these patterns consistently to maintain a robust, scalable multi-tenant architecture that provides excellent developer experience and user experience across all tenants.
+description:
+globs:
+alwaysApply: false
+
+---

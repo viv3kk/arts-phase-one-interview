@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "🔧 Pre-commit: Auto-fixing formatting and linting issues..."
+
+# Auto-fix formatting and linting issues
+npm run format
+npm run lint:fix
+npm run type-check
+
+# Stage the fixed files
+git add .
+
+echo "✅ Pre-commit: All checks passed!"

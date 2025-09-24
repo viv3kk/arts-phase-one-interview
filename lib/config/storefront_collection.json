@@ -1,0 +1,1274 @@
+{
+  "info": {
+    "_postman_id": "0e095f8f-63be-4812-9535-b11cfa7a6106",
+    "name": "tenant/renter",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47499163",
+    "_collection_link": "https://arun-3928344.postman.co/workspace/Arun's-Workspace~305157c8-87c7-490e-8835-d066edfc63c3/collection/43766866-0e095f8f-63be-4812-9535-b11cfa7a6106?action=share&source=collection_link&creator=47499163"
+  },
+  "item": [
+    {
+      "name": "Renter Login",
+      "item": [
+        {
+          "name": "send mobile otp renter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set mobileOTPRequestId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"mobileOTPRequestId\",jsonData.otpRequestId );",
+                  "});",
+                  "",
+                  "pm.test(\"set businessProfileId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"businessProfileId\", jsonData.businessProfileId);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    // \"mobileNumber\": \"9347191177\",\n    \"mobileNumber\": \"5234567890\",\n    \"languageCode\": \"en\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/auth/renter/login/mobile/otp/send",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "auth",
+                "renter",
+                "login",
+                "mobile",
+                "otp",
+                "send"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify mobile otp renter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set mobileOTPRequestId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"mobileOTPRequestId\",jsonData.otpRequestId );",
+                  "});",
+                  "pm.test(\"set auth key\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"renterAuthKey\",jsonData.authKey );",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"otpRequestId\":\"{{mobileOTPRequestId}}\",\n    \"otp\": \"123456\",\n    \"businessProfileId\":\"{{businessProfileId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/auth/renter/login/mobile/otp/verify",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "auth",
+                "renter",
+                "login",
+                "mobile",
+                "otp",
+                "verify"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Checkout Controller",
+      "item": [
+        {
+          "name": "create checkout",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"vehicleId\": \"684926ee42d7f50e821be55b\",\n    \"startDate\": 1747764736.000000000,\n    \"endDate\": 1748964736.000000000,\n    \"redirectionUrl\": \"{{url}}/api/checkout\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout"]
+            },
+            "description": "checkout details page will be keep all th info about vehicle , renter , dates , bussiness profile , price breakup ,"
+          },
+          "response": []
+        },
+        {
+          "name": "get checkout",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout/0ab4665f-2463-4907-98cc-2389362bb36e",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "checkout",
+                "0ab4665f-2463-4907-98cc-2389362bb36e"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Checkout Controller V2",
+      "item": [
+        {
+          "name": "create checkout",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"vehicleId\": \"vc_10089\",\n    \"startDate\": 1756549372.000000000,\n    \"endDate\": 1756749372.000000000,\n    \"pickupLocationId\":\"68a46227b131be28ff49857f\",\n    \"dropoffLocationId\":\"68aa53718a37707e42d8b16c\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout"]
+            },
+            "description": "checkout details page will be keep all th info about vehicle , renter , dates , bussiness profile , price breakup ,"
+          },
+          "response": []
+        },
+        {
+          "name": "update checkout",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"startDate\": 1747764736.000000000,\n    \"endDate\": 1748964736.000000000,\n    \"pickUpLocation\":\"\",\n    \"dropOffLocation\":\"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout/{checkOutId}",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout", "{checkOutId}"]
+            },
+            "description": "checkout details page will be keep all th info about vehicle , renter , dates , bussiness profile , price breakup ,"
+          },
+          "response": []
+        },
+        {
+          "name": "add Addons",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"addOn\": {\n        \"id\": \"68abd566b59e475cb97351cb\",\n        \"quantity\": 2,\n        \"actionType\":\"ADD\"\n    },\n    \"invoiceAddress\": {\n        \"country\": \"United States\",\n        \"state\": \"Illinois\",\n        \"city\": \"Chicago\",\n        \"zip\": \"60601\",\n        \"streetAddress\": \"789 Michigan Avenue\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout/co_10007",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout", "co_10007"]
+            },
+            "description": "checkout details page will be keep all th info about vehicle , renter , dates , bussiness profile , price breakup ,"
+          },
+          "response": []
+        },
+        {
+          "name": "create sesssion",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"addOn\": {\n        \"id\": \"68abd566b59e475cb97351cb\",\n        \"quantity\": 2,\n        \"actionType\":\"ADD\"\n    },\n    \"invoiceAddress\": {\n        \"country\": \"United States\",\n        \"state\": \"Illinois\",\n        \"city\": \"Chicago\",\n        \"zip\": \"60601\",\n        \"streetAddress\": \"789 Michigan Avenue\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout/co_10007",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout", "co_10007"]
+            },
+            "description": "checkout details page will be keep all th info about vehicle , renter , dates , bussiness profile , price breakup ,"
+          },
+          "response": []
+        },
+        {
+          "name": "create sesssion Copy",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"addOn\": {\n        \"id\": \"68abd566b59e475cb97351cb\",\n        \"quantity\": 2,\n        \"actionType\":\"ADD\"\n    },\n    \"invoiceAddress\": {\n        \"country\": \"United States\",\n        \"state\": \"Illinois\",\n        \"city\": \"Chicago\",\n        \"zip\": \"60601\",\n        \"streetAddress\": \"789 Michigan Avenue\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout/co_10007",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout", "co_10007"]
+            },
+            "description": "checkout details page will be keep all th info about vehicle , renter , dates , bussiness profile , price breakup ,"
+          },
+          "response": []
+        },
+        {
+          "name": "get checkout",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/checkout/co_10007",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "checkout", "co_10007"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "public business vehicle controller",
+      "item": [
+        {
+          "name": "get business vehicles list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set mobileOTPRequestId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"onboardingId\",jsonData.onboardingId );",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              },
+              {
+                "key": "",
+                "value": "",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/public/business/vehicles?bookingDates-singleDateRange=1749217902000-1759217902000",
+              "host": ["{{url}}"],
+              "path": ["api", "public", "business", "vehicles"],
+              "query": [
+                {
+                  "key": "bookingDates-singleDateRange",
+                  "value": "1749217902000-1759217902000"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "business vehicle detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set mobileOTPRequestId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"onboardingId\",jsonData.onboardingId );",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/public/business/vehicles/vc_10028?startDate=1755756221&endDate=1755929021&pickupLocationId=68a6ae210a6ce33a444c7ecf&dropoffLocationId=68a6ae210a6ce33a444c7ecf",
+              "host": ["{{url}}"],
+              "path": ["api", "public", "business", "vehicles", "vc_10028"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "1755756221"
+                },
+                {
+                  "key": "endDate",
+                  "value": "1755929021"
+                },
+                {
+                  "key": "pickupLocationId",
+                  "value": "68a6ae210a6ce33a444c7ecf"
+                },
+                {
+                  "key": "dropoffLocationId",
+                  "value": "68a6ae210a6ce33a444c7ecf"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get addOns",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set mobileOTPRequestId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"onboardingId\",jsonData.onboardingId );",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/public/business/vehicles/vc_10028/add-on",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "public",
+                "business",
+                "vehicles",
+                "vc_10028",
+                "add-on"
+              ],
+              "query": [
+                {
+                  "key": "vehicleAddOnByAvailability",
+                  "value": "ACTIVE",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Renter Controller",
+      "item": [
+        {
+          "name": "add renter details",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Sam\",\n    \"email\": \"test@Gamilc.om\",\n    \"insuranceProof\": {\n        \"insuranceProvider\": \"LIC\",\n        \"policyNumber\": \"4536378\",\n        \"insuranceFile\": {\n            \"id\": \"{{uploadId}}\",\n            \"relativePath\": \"{{relativePath}}\",\n            \"name\": \"left\"\n        },\n        \"insuranceCard\":{\n            \"id\": \"{{uploadId}}\",\n            \"relativePath\": \"{{relativePath}}\",\n            \"name\": \"left\"\n        },\n        \"notes\": \"osmteskljrh\"\n    },\n    \"driverLicense\": {\n        \"id\": \"{{uploadId}}\",\n        \"relativePath\": \"{{relativePath}}\",\n        \"name\": \"left\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "renter"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "stripe identity verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"returnUrl\": \"https://htravelss.com/identity-verification\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/identity-verification",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "renter", "identity-verification"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get renter profile",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "renter"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "filter",
+      "item": [
+        {
+          "name": "vehicle filters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set mobileOTPRequestId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"onboardingId\",jsonData.onboardingId );",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/public/filter/PUBLIC_VEHICLE_FILTERS",
+              "host": ["{{url}}"],
+              "path": ["api", "public", "filter", "PUBLIC_VEHICLE_FILTERS"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "check-in-out documents",
+      "item": [
+        {
+          "name": "put check in documents",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"type\": \"CHECK_IN\",\n    \"vehicleImages\": [\n        {\n            \"tag\": \"INTERIOR_IMAGE\",\n            \"file\": {\n                \"id\": \"{{uploadId}}\",\n                \"relativePath\": \"{{relativePath}}\",\n                \"name\": \"left\"\n            }\n        },\n        {\n            \"tag\": \"INTERIOR_IMAGE\",\n            \"file\": {\n                \"id\": \"{{uploadId}}\",\n                \"relativePath\": \"{{relativePath}}\",\n                \"name\": \"left\"\n            }\n        }\n    ],\n    \"odometerReading\": \"4353\",\n    \"fuelTankLevel\": 0.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/check-in-out-detail",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "check-in-out-detail"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "put check out documents",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"type\":\"CHECK_OUT\",\n    \"vehicleImages\": [\n        {\n            \"tag\":\"INTERIOR_IMAGE\",\n            \"file\":{\n            \"id\": \"{{uploadId}}\",\n            \"relativePath\": \"{{relativePath}}\",\n            \"name\": \"left\"\n            }\n        },\n        {\n            \"tag\":\"OTHER_IMAGE\",\n            \"file\":{\n            \"id\": \"{{uploadId}}\",\n            \"relativePath\": \"{{relativePath}}\",\n            \"name\": \"left\"\n            }\n        }\n    ],\n    \"odometerReading\":\"4353\",\n    \"fuelTankLevel\":0.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/check-in-out-detail",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "check-in-out-detail"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "bookings",
+      "item": [
+        {
+          "name": "detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "renter", "bookings", "10005"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "renter", "bookings"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "document controller",
+      "item": [
+        {
+          "name": "put booking documents",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"drivingLicenseDetails\": {\n        \"drivingLicense\": {\n            \"id\": \"{{uploadId}}\",\n            \"relativePath\": \"{{relativePath}}\",\n            \"name\": \"left\"\n        }\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/document",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "document"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "chat controller",
+      "item": [
+        {
+          "name": "get chat",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/chat",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "renter", "bookings", "10005", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "mark as read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/chat/message/read",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "chat",
+                "message",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "send message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"messageType\": \"TEXT_AND_FILE\",\n    \"message\": {\n        // \"text\": \"testing yes the pickup location same for the vehicle\"\n        \"files\": [\n            {\n                \"id\": \"{{uploadId}}\",\n                \"relativePath\": \"{{relativePath}}\",\n                \"name\": \"left\"\n            },\n            {\n                \"id\": \"{{uploadId}}\",\n                \"relativePath\": \"{{relativePath}}\",\n                \"name\": \"left\"\n            }\n        ]\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/chat/message",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "chat",
+                "message"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get Unread messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/chat/message/unread",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "chat",
+                "message",
+                "unread"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "react",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{renterAuthKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"emoji\":\"asdfaf\",\n    \"messageId\":\"message_10001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/renter/bookings/10005/chat/message/react",
+              "host": ["{{url}}"],
+              "path": [
+                "api",
+                "secure",
+                "renter",
+                "bookings",
+                "10005",
+                "chat",
+                "message",
+                "react"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "image upload",
+      "item": [
+        {
+          "name": "driving license proof",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set upload id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"uploadId\",jsonData.id );",
+                  "});",
+                  "",
+                  "pm.test(\"set relative path\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"relativePath\",jsonData.relativePath );",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fileType",
+                  "value": "INSURANCE_CARD_BACK",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/aetheraiapp/Pictures/Screenshots/Screenshot 2025-05-20 140235.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/generic-file-upload",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "generic-file-upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insurance document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set upload id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"uploadId\",jsonData.id );",
+                  "});",
+                  "",
+                  "pm.test(\"set relative path\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"relativePath\",jsonData.relativePath );",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fileType",
+                  "value": "INSURANCE_DOCUMENT",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/aetheraiapp/Pictures/Screenshots/Screenshot 2025-05-20 140235.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/generic-file-upload",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "generic-file-upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "insurance card",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set upload id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"uploadId\",jsonData.id );",
+                  "});",
+                  "",
+                  "pm.test(\"set relative path\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"relativePath\",jsonData.relativePath );",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fileType",
+                  "value": "INSURANCE_CARD",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/aetheraiapp/Pictures/Screenshots/Screenshot 2025-05-20 140235.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/generic-file-upload",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "generic-file-upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "vehicle image",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"set upload id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"uploadId\",jsonData.id );",
+                  "});",
+                  "",
+                  "pm.test(\"set relative path\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"relativePath\",jsonData.relativePath );",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fileType",
+                  "value": "VEHICLE_IMAGE",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/aetheraiapp/Pictures/Screenshots/Screenshot 2025-05-20 140235.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/api/secure/generic-file-upload",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "generic-file-upload"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "notification controller",
+      "item": [
+        {
+          "name": "get notfications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/secure/notifications",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "notifications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "mark all read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authkey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/secure/notifications/mark-all-read",
+              "host": ["{{url}}"],
+              "path": ["api", "secure", "notifications", "mark-all-read"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "test-rental",
+  "name": "Test Rental Co",
+  "theme": "ocean",
+  "content": {
+    "hero": {
+      "headline": "Test Rental Co - Development Testing",
+      "description": "This is a test tenant configuration used for development and testing purposes."
+    },
+    "about": {
+      "title": "About Test Rental Co",
+      "content": "This is a test tenant used for development and testing. It includes all required fields and serves as a reference for the expected configuration structure."
+    },
+    "contact": {
+      "phone": "+1-555-TEST",
+      "email": "test@test-rental.com",
+      "address": "123 Test St, Dev City, DC 00000"
+    }
+  },
+  "metadata": {
+    "title": "Test Rental Co - Development Testing",
+    "description": "Test tenant configuration for development and testing purposes.",
+    "seo": {
+      "keywords": ["test rental", "development", "testing", "demo car rental"],
+      "favicon": "/favicons/test-rental.ico",
+      "openGraph": {
+        "image": "/images/test-rental-og.jpg",
+        "type": "website",
+        "locale": "en_US"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "site": "@testrental",
+        "creator": "@testrental"
+      },
+      "canonicalBase": "https://test-rental.localhost:3000",
+      "robots": "noindex, nofollow"
+    }
+  }
+}

@@ -1,0 +1,270 @@
+# Multi-Tenant Storefront - Project Overview
+
+A modern, scalable multi-tenant storefront built with **Next.js 15**, **React 18+**, **TypeScript**, **Tailwind CSS v4**, and **shadcn/ui**. The platform enables multiple tenants (car rental companies) to have their own branded experiences through dynamic theming and tenant-specific configurations.
+
+---
+
+## 🏗️ **Core Architecture**
+
+### **Multi-Tenant System**
+
+- **Subdomain-based routing**: `abc-rental.localhost:3000` → abc-rental tenant
+- **Dynamic tenant detection** via middleware with `x-tenant-id` header
+- **Theme system** with CSS custom properties for dynamic theming
+- **Tenant-specific configurations** in `config/tenants/`
+
+### **Technology Stack**
+
+- **Next.js 15** with App Router and Server Components
+- **React 18+** with concurrent features
+- **TypeScript** with strict configuration
+- **Tailwind CSS v4** with semantic design tokens
+- **shadcn/ui** for component library
+- **Zustand** for client-side state management
+- **React Query** for server state management
+- **OTP-based authentication** with tenant-aware API integration
+
+---
+
+## 🎨 **Theme System**
+
+### **Available Themes**
+
+- **Ocean** (`#2563eb`) - Professional, trustworthy (default)
+- **Fire** (`#dc2626`) - Bold, energetic
+- **Forest** (`#059669`) - Natural, sustainable
+
+### **Semantic Design Tokens**
+
+```css
+:root {
+  --color-primary: #2563eb; /* Ocean theme */
+  --color-secondary: #64748b;
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+}
+```
+
+### **Component Theming**
+
+```tsx
+// ✅ Automatic theme adaptation
+<Button className="bg-primary text-primary-foreground">
+  Themed Button
+</Button>
+
+// ✅ shadcn/ui components
+<Card>Themed Card</Card>
+```
+
+---
+
+## 🏢 **Tenant Experience**
+
+### **Tenant Configuration**
+
+Each tenant has a JSON configuration file defining:
+
+- **Branding**: Colors, logos, company information
+- **Content**: Hero sections, about text, contact details
+- **SEO**: Meta titles, descriptions, Open Graph data
+- **Features**: Available functionality and settings
+
+### **Dynamic Content**
+
+- **Tenant-specific landing pages** with custom branding
+- **Dynamic SEO metadata** for each tenant
+- **Custom contact information** and business details
+- **Theme-aware components** that adapt to tenant colors
+
+### **Multi-Tenant Testing**
+
+```bash
+# Test different tenants
+http://localhost:3000                    # Default (Ocean)
+http://abc-rental.localhost:3000         # Fire theme
+http://xyz-rental.localhost:3000         # Forest theme
+```
+
+---
+
+## 🔐 **Authentication System**
+
+### **OTP-Based Authentication**
+
+- **Mobile number verification** with SMS OTP
+- **Tenant-aware API integration** with proper headers
+- **Global modal system** for login flows
+- **Session management** with secure cookies
+
+### **Authentication Flow**
+
+```typescript
+// 1. Send OTP
+const { sendOtp } = useAuth()
+await sendOtp(mobileNumber)
+
+// 2. Verify OTP
+const { verifyOtp } = useAuth()
+await verifyOtp(otp)
+
+// 3. Store auth data
+setAuthData({ authKey: 'abc123', userId: 'user456' })
+```
+
+---
+
+## 🗃️ **State Management**
+
+### **Zustand Store Architecture**
+
+- **Slice-based architecture** for modular state management
+- **SSR-compatible** with manual hydration
+- **Consolidated loading states** for simpler component logic
+- **Persistent storage** for essential auth data
+
+### **React Query Integration**
+
+- **Server state management** with caching and background updates
+- **Host-consumer pattern** for simplified integration
+- **Optimistic updates** for better UX
+- **Error handling** with retry logic
+
+---
+
+## 🧩 **Component Architecture**
+
+### **File Organization**
+
+```
+components/
+├── providers/          # Context providers
+│   ├── TenantProvider.tsx
+│   └── ThemeProvider.tsx
+└── ui/                # Reusable UI components
+    ├── Button.tsx
+    ├── Card.tsx
+    └── LoginModal.tsx
+```
+
+### **Component Patterns**
+
+- **Server Components First**: Default to server components
+- **Client Components**: Only when interactivity is needed
+- **shadcn/ui Integration**: Consistent UI components
+- **Semantic Theming**: Theme-aware styling
+
+---
+
+## 🔧 **Service Layer**
+
+### **Three-Layer Architecture**
+
+1. **Endpoints**: API route definitions with TypeScript types
+2. **Services**: Business logic and error handling
+3. **Hooks**: React Query integration for components
+
+### **API Client Pattern**
+
+```typescript
+// ✅ Use service layer
+const result = await authService.sendOtp(mobileNumber)
+
+// ❌ Avoid direct fetch
+const response = await fetch('/api/auth/send-otp')
+```
+
+---
+
+## 🚀 **Performance & Rendering**
+
+### **Rendering Strategies**
+
+- **SSG**: Static content (marketing pages)
+- **ISR**: Periodic updates (product catalogs)
+- **SSR**: User-specific content (dashboards)
+
+### **Performance Optimization**
+
+- **Server Components**: Reduce client-side JavaScript
+- **Code Splitting**: Lazy load non-critical components
+- **Image Optimization**: Next.js Image component
+- **Bundle Optimization**: Tree shaking and minification
+
+---
+
+## 🧪 **Testing & Quality**
+
+### **Testing Strategy**
+
+- **Unit Tests**: Component and utility testing
+- **Integration Tests**: Service layer testing
+- **Configuration Tests**: Tenant config validation
+- **Type Tests**: TypeScript type checking
+
+### **Quality Assurance**
+
+- **ESLint**: Code linting and best practices
+- **Prettier**: Consistent code formatting
+- **TypeScript**: Strict type checking
+- **Git Hooks**: Automated quality gates
+
+---
+
+## 📚 **Documentation**
+
+### **Key Documentation Files**
+
+- **Quick Reference**: `docs/QUICK-REFERENCE.md`
+- **Architecture Overview**: `docs/ARCHITECTURE-OVERVIEW.md`
+- **Theme System**: `docs/THEME-SYSTEM.md`
+- **UI Components**: `docs/UI-COMPONENTS.md`
+- **Rendering Strategies**: `docs/RENDERING-STRATEGIES.md`
+
+### **Development Guides**
+
+- **Setup Guide**: `docs/development-setup.md`
+- **Testing Guide**: `docs/development-testing.md`
+- **Service Layer**: `docs/services-overview.md`
+- **State Management**: `docs/zustand-implementation-guide.md`
+
+---
+
+## 🎯 **Key Principles**
+
+1. **Server Components First**: Default to server components, use client components only when needed
+2. **Type Safety**: Full TypeScript implementation with strict configuration
+3. **Semantic Theming**: Use semantic classes that adapt to tenant themes
+4. **Consolidated States**: Single loading state per domain for simpler component logic
+5. **Service Layer**: Always use service layer pattern for API calls
+6. **shadcn/ui**: Use shadcn/ui components for consistent UI
+7. **Multi-Tenant**: Design everything with multi-tenancy in mind
+8. **Performance**: Optimize for Core Web Vitals and user experience
+
+---
+
+## 🔄 **Development Workflow**
+
+### **Common Commands**
+
+```bash
+npm run dev              # Start development
+npm run build           # Production build
+npm run lint            # ESLint checking
+npm run type-check      # TypeScript validation
+npm run test:config     # Validate tenant configs
+```
+
+### **Multi-Tenant Development**
+
+- **Tenant Configuration**: Add new tenants in `config/tenants/`
+- **Theme Development**: Create new themes in `lib/themes/`
+- **Component Testing**: Test across all tenant themes
+- **Performance Monitoring**: Monitor Core Web Vitals
+
+This multi-tenant storefront provides a solid foundation for scalable, branded experiences across multiple tenants while maintaining code quality, performance, and developer experience.
+
+- Stripe integration for payment processing.
+- AWS S3 for secure document and image storage.
+- Admin-only dashboards with full visibility into all user types.
+- Planned AI-based features for pricing optimization, fraud detection, and availability prediction.

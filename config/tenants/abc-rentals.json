@@ -1,0 +1,46 @@
+{
+  "id": "abc-rentals",
+  "name": "ABC Car Rentals",
+  "theme": "fire",
+  "content": {
+    "hero": {
+      "headline": "Premium Car Rentals by ABC",
+      "description": "Discover our fleet of quality vehicles for your next journey. Professional service since 2010."
+    },
+    "about": {
+      "title": "About ABC Rentals",
+      "content": "We've been serving customers with reliable car rental services since 2010. Our commitment to quality and customer satisfaction has made us a trusted choice for both business and leisure travelers. We maintain a modern fleet of well-maintained vehicles to ensure your safety and comfort."
+    },
+    "contact": {
+      "phone": "+1-555-0123",
+      "email": "info@abc-rentals.com",
+      "address": "456 Rental Ave, Business District, BD 54321"
+    }
+  },
+  "metadata": {
+    "title": "ABC Car Rentals - Premium Vehicle Rentals",
+    "description": "Rent quality vehicles from ABC Car Rentals. Professional service and competitive rates since 2010.",
+    "seo": {
+      "keywords": [
+        "car rental",
+        "ABC rentals",
+        "premium vehicles",
+        "business car hire",
+        "vehicle rental"
+      ],
+      "favicon": "/favicons/abc-rentals.ico",
+      "openGraph": {
+        "image": "/images/abc-rentals-og.jpg",
+        "type": "website",
+        "locale": "en_US"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "site": "@abcrentals",
+        "creator": "@abcrentals"
+      },
+      "canonicalBase": "https://abc-rentals.com",
+      "robots": "index, follow"
+    }
+  }
+}

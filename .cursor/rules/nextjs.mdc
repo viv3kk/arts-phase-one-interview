@@ -1,0 +1,518 @@
+---
+description: Next.js with TypeScript and Tailwind UI best practices
+globs: **/*.tsx, **/*.ts, src/**/*.ts, src/**/*.tsx
+---
+
+# Next.js 15 App Router Rules
+
+## 🚀 **Core Principles**
+
+### **Server Components First**
+
+- **Default to Server Components**: Use server components by default
+- **Client Components Only When Needed**: Use `'use client'` only for interactivity
+- **Data Fetching on Server**: Fetch data server-side for better performance
+- **SEO Optimization**: Server-side rendering for better SEO
+
+### **Multi-Tenant Architecture**
+
+- **Subdomain-based routing**: `abc-rental.localhost:3000` → abc-rental tenant
+- **Dynamic tenant detection** via middleware
+- **Tenant-specific configurations** and theming
+- **SSR/SSG compatibility** with tenant context
+
+## 🏗️ **Project Structure**
+
+### **App Router Structure**
+
+```
+app/
+├── layout.tsx                # Root layout with providers
+├── page.tsx                 # Home page (ISR)
+├── globals.css              # Global styles + theme tokens
+├── robots.txt/              # Dynamic robots.txt
+│   └── route.ts
+├── sitemap.xml/             # Dynamic sitemap
+│   └── route.ts
+└── api/                     # API routes
+    └── revalidate/
+        └── route.ts
+```
+
+### **File Organization**
+
+```
+components/
+├── providers/               # Context providers
+│   ├── TenantProvider.tsx
+│   └── ThemeProvider.tsx
+└── ui/                     # shadcn/ui components
+
+lib/
+├── stores/                 # Zustand stores
+├── services/              # Service layer
+├── hooks/                 # Custom hooks
+├── types/                 # TypeScript types
+└── utils/                 # Utility functions
+
+config/
+├── tenants.json           # Tenant registry
+└── tenants/              # Individual tenant configs
+```
+
+## 🎨 **Rendering Strategies**
+
+### **Quick Decision Matrix**
+
+| Content Type    | User Data | Update Frequency | Strategy |
+| --------------- | --------- | ---------------- | -------- |
+| Marketing pages | No        | Rarely           | **SSG**  |
+| Product catalog | No        | Daily/Weekly     | **ISR**  |
+| User dashboard  | Yes       | Real-time        | **SSR**  |
+| Tenant landing  | No        | Monthly          | **ISR**  |
+
+### **Implementation Examples**
+
+```tsx
+// SSG - Static content
+export default function AboutPage() {
+  return <StaticContent />
+}
+
+// ISR - Periodic updates
+export const revalidate = 3600 // 1 hour
+export default async function ProductsPage() {
+  const products = await fetchProducts()
+  return <ProductGrid products={products} />
+}
+
+// SSR - User-specific
+import { headers } from 'next/headers'
+export default async function DashboardPage() {
+  const userId = (await headers()).get('x-user-id')
+  const userData = await fetchUserData(userId)
+  return <Dashboard userData={userData} />
+}
+```
+
+## 🏢 **Multi-Tenant Implementation**
+
+### **Middleware Pattern**
+
+```typescript
+// middleware.ts
+export function middleware(request: NextRequest) {
+  const hostname = request.headers.get('host') || ''
+  const tenantId = extractTenantFromHostname(hostname)
+
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-tenant-id', tenantId)
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+}
+```
+
+### **Tenant-Aware Layout**
+
+```tsx
+// app/layout.tsx
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const headersList = await headers()
+  const tenantId = headersList.get('x-tenant-id')
+  const config = await getTenantConfig(tenantId)
+  const themeCSS = await generateTenantThemeCSS(config)
+
+  return (
+    <html lang='en'>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: themeCSS }} />
+      </head>
+      <body>
+        <Providers>
+          <TenantProvider initialConfig={config}>
+            <ThemeProvider>{children}</ThemeProvider>
+          </TenantProvider>
+        </Providers>
+      </body>
+    </html>
+  )
+}
+```
+
+### **Dynamic Metadata**
+
+```typescript
+// app/layout.tsx
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers()
+  const tenantId = headersList.get('x-tenant-id')
+  const config = await getTenantConfig(tenantId)
+
+  return {
+    title: config.metadata.title,
+    description: config.metadata.description,
+    openGraph: {
+      title: config.metadata.title,
+      description: config.metadata.description,
+    },
+  }
+}
+```
+
+## 🧩 **Component Patterns**
+
+### **Server Components**
+
+```tsx
+// ✅ Good - Server Component (default)
+export default async function ProductPage() {
+  const products = await fetchProducts() // Server-side data fetching
+
+  return (
+    <div>
+      <h1>Our Products</h1>
+      <ProductGrid products={products} />
+      <ClientComponent /> {/* Client component for interactivity */}
+    </div>
+  )
+}
+```
+
+### **Client Components**
+
+```tsx
+// ✅ Good - Client Component only when needed
+'use client'
+
+import { useState } from 'react'
+
+export function InteractiveComponent() {
+  const [state, setState] = useState('')
+
+  return (
+    <div>
+      <input value={state} onChange={e => setState(e.target.value)} />
+    </div>
+  )
+}
+```
+
+### **Hybrid Patterns**
+
+```tsx
+// ✅ Good - Server component with client interactivity
+export default async function UserProfilePage() {
+  const user = await fetchUser() // Server-side data fetching
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <UserProfileForm user={user} /> {/* Client component for form */}
+    </div>
+  )
+}
+```
+
+## 🔐 **Authentication Patterns**
+
+### **Server-Side Auth Check**
+
+```tsx
+// app/dashboard/page.tsx
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+
+export default async function DashboardPage() {
+  const headersList = await headers()
+  const authKey = headersList.get('x-auth-key')
+
+  if (!authKey) {
+    redirect('/login')
+  }
+
+  const userData = await fetchUserData(authKey)
+
+  return <Dashboard userData={userData} />
+}
+```
+
+### **Client-Side Auth**
+
+```tsx
+// components/AuthGuard.tsx
+'use client'
+
+import { useAuth } from '@/lib/providers/StoreProvider'
+import { redirect } from 'next/navigation'
+
+export function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    redirect('/login')
+  }
+
+  return <>{children}</>
+}
+```
+
+## 🎨 **Theme System Integration**
+
+### **Server-Side Theme Injection**
+
+```tsx
+// app/layout.tsx
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const headersList = await headers()
+  const tenantId = headersList.get('x-tenant-id')
+  const config = await getTenantConfig(tenantId)
+  const themeCSS = await generateTenantThemeCSS(config)
+
+  return (
+    <html lang='en'>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: themeCSS }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### **Client-Side Theme Access**
+
+```tsx
+// components/ThemeAwareComponent.tsx
+'use client'
+
+import { useAppliedTheme } from '@/components/providers/ThemeProvider'
+
+export function ThemeAwareComponent() {
+  const theme = useAppliedTheme()
+
+  return <div style={{ color: theme.primary }}>Themed content</div>
+}
+```
+
+## 🚀 **Performance Optimization**
+
+### **Code Splitting**
+
+```tsx
+// Lazy load non-critical components
+import { lazy, Suspense } from 'react'
+
+const LazyComponent = lazy(() => import('./LazyComponent'))
+
+export default function Page() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <LazyComponent />
+    </Suspense>
+  )
+}
+```
+
+### **Image Optimization**
+
+```tsx
+import Image from 'next/image'
+
+export default function ProductCard({ product }) {
+  return (
+    <div>
+      <Image
+        src={product.image}
+        alt={product.name}
+        width={300}
+        height={200}
+        priority={false} // Use priority for above-the-fold images
+      />
+    </div>
+  )
+}
+```
+
+### **Bundle Optimization**
+
+```typescript
+// next.config.js
+module.exports = {
+  experimental: {
+    optimizePackageImports: ['@/components/ui'],
+  },
+  images: {
+    domains: ['your-cdn.com'],
+  },
+  // Tenant-specific optimizations
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'x-tenant-id',
+            value: '${tenantId}',
+          },
+        ],
+      },
+    ]
+  },
+}
+```
+
+## 🧪 **Testing Patterns**
+
+### **Server Component Testing**
+
+```typescript
+// __tests__/app/page.test.tsx
+import { render } from '@testing-library/react'
+import HomePage from '@/app/page'
+
+// Mock the server-side functions
+jest.mock('@/lib/tenant', () => ({
+  getTenantConfig: jest.fn(() => ({
+    id: 'test-tenant',
+    name: 'Test Tenant',
+    theme: 'ocean',
+  })),
+}))
+
+describe('HomePage', () => {
+  test('renders tenant-specific content', async () => {
+    const page = await HomePage()
+    const { container } = render(page)
+
+    expect(container).toHaveTextContent('Test Tenant')
+  })
+})
+```
+
+### **Client Component Testing**
+
+```typescript
+// __tests__/components/InteractiveComponent.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { InteractiveComponent } from './InteractiveComponent'
+
+describe('InteractiveComponent', () => {
+  test('handles user interaction', () => {
+    render(<InteractiveComponent />)
+
+    const input = screen.getByRole('textbox')
+    fireEvent.change(input, { target: { value: 'test' } })
+
+    expect(input).toHaveValue('test')
+  })
+})
+```
+
+## 🎯 **Best Practices**
+
+### **Do's**
+
+- ✅ **Use Server Components by default** for better performance
+- ✅ **Fetch data server-side** when possible
+- ✅ **Use ISR for semi-static content** with periodic updates
+- ✅ **Implement proper error boundaries** for client components
+- ✅ **Optimize images** with Next.js Image component
+- ✅ **Use code splitting** for large components
+- ✅ **Implement proper loading states** with Suspense
+
+### **Don'ts**
+
+- ❌ **Don't use client components unnecessarily** - prefer server components
+- ❌ **Avoid client-side data fetching** when server-side is possible
+- ❌ **Don't forget error handling** in async components
+- ❌ **Avoid large client-side bundles** - use code splitting
+- ❌ **Don't use useEffect for data fetching** in server components
+
+## 🔄 **Migration Patterns**
+
+### **From Pages Router**
+
+```typescript
+// Before (Pages Router)
+// pages/products/[id].tsx
+export async function getStaticProps({ params }) {
+  const product = await fetchProduct(params.id)
+  return { props: { product } }
+}
+
+export async function getStaticPaths() {
+  const products = await fetchProducts()
+  return {
+    paths: products.map(p => ({ params: { id: p.id } })),
+    fallback: false,
+  }
+}
+
+// After (App Router)
+// app/products/[id]/page.tsx
+export async function generateStaticParams() {
+  const products = await fetchProducts()
+  return products.map(p => ({ id: p.id }))
+}
+
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await fetchProduct(params.id)
+  return <ProductDetail product={product} />
+}
+```
+
+### **From Client-Side Data Fetching**
+
+```typescript
+// Before
+'use client'
+export default function ProductPage() {
+  const [products, setProducts] = useState([])
+
+  useEffect(() => {
+    fetch('/api/products').then(res => res.json()).then(setProducts)
+  }, [])
+
+  return <ProductGrid products={products} />
+}
+
+// After
+export default async function ProductPage() {
+  const products = await fetchProducts() // Server-side
+  return <ProductGrid products={products} />
+}
+```
+
+Follow these patterns consistently to maintain a robust, performant Next.js application that provides excellent developer experience and user experience.
+
+## State Management
+
+- Minimize client-side state
+- Use React Context sparingly
+- Prefer server state when possible
+- Implement proper loading states
