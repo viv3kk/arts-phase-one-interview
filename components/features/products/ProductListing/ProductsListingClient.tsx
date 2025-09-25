@@ -105,7 +105,8 @@ export function ProductsListingClient({
 
   return (
     <div className='space-y-6'>
-      <ProductFilters
+      {/* TODO: Add filters */}
+      {/* <ProductFilters
         searchQuery={searchQuery}
         selectedCategory={selectedCategory}
         sortBy={sortBy}
@@ -116,7 +117,7 @@ export function ProductsListingClient({
         onSortChange={handleSortChange}
         onOrderChange={handleOrderChange}
         onClearFilters={clearFilters}
-      />
+      /> */}
 
       <ResultsHeader
         total={total}

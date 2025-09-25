@@ -16,12 +16,17 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo } from 'react'
+import {
+  formatPrice,
+  validatePricingCalculations,
+  calculateDiscountedPrice,
+  calculateItemTotal,
+} from '@/lib/utils/pricing'
 
 export function CartClient() {
   const {
     items,
     totalItems,
-    totalPrice,
     itemCount,
     isEmpty,
     updateQuantity,
@@ -29,19 +34,25 @@ export function CartClient() {
     clearCart,
   } = useCart()
 
-  // Calculate discount savings
-  const totalSavings = useMemo(() => {
-    return items.reduce((savings, item) => {
-      if (item.discountPercentage) {
-        const originalPrice = item.price * item.quantity
-        const discountedPrice =
-          (item.price - (item.price * item.discountPercentage) / 100) *
-          item.quantity
-        return savings + (originalPrice - discountedPrice)
-      }
-      return savings
-    }, 0)
-  }, [items])
+  // Calculate pricing using utility functions
+  const pricingCalculations = useMemo(() => {
+    const validation = validatePricingCalculations(items)
+
+    // Log validation results for debugging
+    console.log('🧮 Pricing Validation:', {
+      isValid: validation.isValid,
+      subtotal: validation.formattedSubtotal,
+      savings: validation.formattedSavings,
+      total: validation.formattedTotal,
+      itemCount: items.length,
+      totalItems: totalItems,
+    })
+
+    return validation
+  }, [items, totalItems])
+
+  // Extract calculated values
+  const { subtotal, totalSavings, finalTotal, isValid } = pricingCalculations
 
   if (isEmpty) {
     return (
@@ -101,17 +112,27 @@ export function CartClient() {
             <CardTitle>Order Summary</CardTitle>
           </CardHeader>
           <CardContent className='space-y-4'>
-            {/* Item Count */}
+            {/* Validation Warning */}
+            {!isValid && (
+              <div className='bg-yellow-50 border border-yellow-200 rounded-md p-3'>
+                <p className='text-sm text-yellow-800'>
+                  ⚠️ Pricing calculation mismatch detected. Please refresh the
+                  page.
+                </p>
+              </div>
+            )}
+
+            {/* Item Count - Show original subtotal before discounts */}
             <div className='flex justify-between text-sm'>
               <span>Items ({totalItems})</span>
-              <span>${totalPrice.toFixed(2)}</span>
+              <span>{formatPrice(subtotal)}</span>
             </div>
 
             {/* Discount */}
             {totalSavings > 0 && (
               <div className='flex justify-between text-sm text-green-600'>
                 <span>Discount</span>
-                <span>-${totalSavings.toFixed(2)}</span>
+                <span>-{formatPrice(totalSavings)}</span>
               </div>
             )}
 
@@ -123,10 +144,10 @@ export function CartClient() {
 
             <Separator />
 
-            {/* Total */}
+            {/* Total - Final amount after applying discounts */}
             <div className='flex justify-between text-lg font-semibold'>
               <span>Total</span>
-              <span>${totalPrice.toFixed(2)}</span>
+              <span>{formatPrice(finalTotal)}</span>
             </div>
 
             {/* Checkout Button */}
@@ -156,9 +177,17 @@ interface CartItemCardProps {
 }
 
 function CartItemCard({ item, onUpdateQuantity, onRemove }: CartItemCardProps) {
+  // Use utility function for discounted price calculation
   const discountPrice = item.discountPercentage
-    ? item.price - (item.price * item.discountPercentage) / 100
+    ? calculateDiscountedPrice(item.price, item.discountPercentage)
     : item.price
+
+  // Calculate item total using utility function
+  const itemTotal = calculateItemTotal(
+    item.price,
+    item.quantity,
+    item.discountPercentage,
+  )
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -221,11 +250,11 @@ function CartItemCard({ item, onUpdateQuantity, onRemove }: CartItemCardProps) {
               {/* Price */}
               <div className='flex items-center gap-2'>
                 <span className='text-lg font-bold'>
-                  ${discountPrice.toFixed(2)}
+                  {formatPrice(discountPrice)}
                 </span>
                 {item.discountPercentage && item.discountPercentage > 0 && (
                   <span className='text-sm text-muted-foreground line-through'>
-                    ${item.price.toFixed(2)}
+                    {formatPrice(item.price)}
                   </span>
                 )}
               </div>
@@ -258,7 +287,7 @@ function CartItemCard({ item, onUpdateQuantity, onRemove }: CartItemCardProps) {
             {/* Item Total */}
             <div className='flex justify-end mt-2'>
               <span className='text-sm text-muted-foreground'>
-                Total: ${(discountPrice * item.quantity).toFixed(2)}
+                Total: {formatPrice(itemTotal)}
               </span>
             </div>
           </div>
