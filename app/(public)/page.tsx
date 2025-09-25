@@ -27,7 +27,6 @@ export default async function HomePage() {
             <Button asChild size='lg'>
               <Link href='/products'>View All Products</Link>
             </Button>
-            
           </div>
         </div>
       </section>

@@ -14,20 +14,22 @@ const testItems = [
     price: 28999.99,
     quantity: 8,
     discountPercentage: 3.98,
-    title: '300 Touring (Chrysler)'
+    title: '300 Touring (Chrysler)',
   },
   {
     id: 2,
     price: 99.99,
     quantity: 2,
     discountPercentage: 12.07,
-    title: 'Amazon Echo Plus (Amazon)'
-  }
+    title: 'Amazon Echo Plus (Amazon)',
+  },
 ]
 
 console.log('📊 Test Items:')
 testItems.forEach(item => {
-  console.log(`- ${item.title}: $${item.price} x ${item.quantity} (${item.discountPercentage}% off)`)
+  console.log(
+    `- ${item.title}: $${item.price} x ${item.quantity} (${item.discountPercentage}% off)`,
+  )
 })
 
 // Manual calculation functions
@@ -55,7 +57,7 @@ function calculateTotalSavings(items) {
       const discountedTotal = calculateItemTotal(
         item.price,
         item.quantity,
-        item.discountPercentage
+        item.discountPercentage,
       )
       return totalSavings + (originalTotal - discountedTotal)
     }
@@ -65,7 +67,7 @@ function calculateTotalSavings(items) {
 
 function calculateSubtotal(items) {
   return items.reduce((subtotal, item) => {
-    return subtotal + (item.price * item.quantity)
+    return subtotal + item.price * item.quantity
   }, 0)
 }
 
@@ -76,11 +78,18 @@ function calculateFinalTotal(subtotal, discounts = 0, shipping = 0) {
 console.log('\n🧮 Individual Item Calculations:')
 
 testItems.forEach(item => {
-  const discountedPrice = calculateDiscountedPrice(item.price, item.discountPercentage)
-  const itemTotal = calculateItemTotal(item.price, item.quantity, item.discountPercentage)
+  const discountedPrice = calculateDiscountedPrice(
+    item.price,
+    item.discountPercentage,
+  )
+  const itemTotal = calculateItemTotal(
+    item.price,
+    item.quantity,
+    item.discountPercentage,
+  )
   const originalTotal = item.price * item.quantity
   const savings = originalTotal - itemTotal
-  
+
   console.log(`\n${item.title}:`)
   console.log(`  Original Price: ${formatPrice(item.price)}`)
   console.log(`  Discounted Price: ${formatPrice(discountedPrice)}`)
@@ -106,23 +115,32 @@ console.log('Total: $222942.17 (Final amount after discounts)')
 
 console.log('\n🔍 Calculation Verification:')
 // Correct expected values
-const expectedOriginalSubtotal = 232199.90
+const expectedOriginalSubtotal = 232199.9
 const expectedSavings = 9257.73
 const expectedFinalTotal = 222942.17
 
-const originalSubtotalMatch = Math.abs(subtotal - expectedOriginalSubtotal) < 0.01
+const originalSubtotalMatch =
+  Math.abs(subtotal - expectedOriginalSubtotal) < 0.01
 const savingsMatch = Math.abs(totalSavings - expectedSavings) < 0.01
 const finalTotalMatch = Math.abs(finalTotal - expectedFinalTotal) < 0.01
 
-console.log(`Original Subtotal Match: ${originalSubtotalMatch ? '✅' : '❌'} (Expected: ${expectedOriginalSubtotal}, Actual: ${subtotal})`)
-console.log(`Savings Match: ${savingsMatch ? '✅' : '❌'} (Expected: ${expectedSavings}, Actual: ${totalSavings})`)
-console.log(`Final Total Match: ${finalTotalMatch ? '✅' : '❌'} (Expected: ${expectedFinalTotal}, Actual: ${finalTotal})`)
+console.log(
+  `Original Subtotal Match: ${originalSubtotalMatch ? '✅' : '❌'} (Expected: ${expectedOriginalSubtotal}, Actual: ${subtotal})`,
+)
+console.log(
+  `Savings Match: ${savingsMatch ? '✅' : '❌'} (Expected: ${expectedSavings}, Actual: ${totalSavings})`,
+)
+console.log(
+  `Final Total Match: ${finalTotalMatch ? '✅' : '❌'} (Expected: ${expectedFinalTotal}, Actual: ${finalTotal})`,
+)
 
 console.log(`\n📊 Calculation Breakdown:`)
 console.log(`Original Subtotal: ${formatPrice(subtotal)}`)
 console.log(`Total Discounts: -${formatPrice(totalSavings)}`)
 console.log(`Final Total: ${formatPrice(finalTotal)}`)
-console.log(`Math Check: ${formatPrice(subtotal)} - ${formatPrice(totalSavings)} = ${formatPrice(subtotal - totalSavings)}`)
+console.log(
+  `Math Check: ${formatPrice(subtotal)} - ${formatPrice(totalSavings)} = ${formatPrice(subtotal - totalSavings)}`,
+)
 
 if (originalSubtotalMatch && savingsMatch && finalTotalMatch) {
   console.log('\n🎉 All pricing calculations are working correctly!')

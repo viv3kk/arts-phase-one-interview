@@ -7,13 +7,7 @@
 
 import { useProductsListing } from '@/lib/services/hooks'
 import { useState } from 'react'
-import {
-  ProductFilters,
-  ProductsGrid,
-  ProductPagination,
-  ResultsHeader,
-  ErrorState,
-} from './'
+import { ProductsGrid, ProductPagination, ResultsHeader, ErrorState } from './'
 
 interface ProductsListingClientProps {
   initialParams?: {
@@ -29,14 +23,6 @@ interface ProductsListingClientProps {
 export function ProductsListingClient({
   initialParams,
 }: ProductsListingClientProps) {
-  const [searchQuery, setSearchQuery] = useState(initialParams?.search || '')
-  const [selectedCategory, setSelectedCategory] = useState(
-    initialParams?.category || 'all',
-  )
-  const [sortBy, setSortBy] = useState(initialParams?.sortBy || 'title')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(
-    initialParams?.order || 'asc',
-  )
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   // Get products with current filters
@@ -52,52 +38,14 @@ export function ProductsListingClient({
     goToPage,
     nextPage,
     prevPage,
-    updateParams,
   } = useProductsListing({
     page: initialParams?.page || 1,
     limit: initialParams?.limit || 12,
-    search: searchQuery,
-    category: selectedCategory,
-    sortBy,
-    order: sortOrder,
+    search: initialParams?.search,
+    category: initialParams?.category,
+    sortBy: initialParams?.sortBy || 'title',
+    order: initialParams?.order || 'asc',
   })
-
-  // Handle search
-  const handleSearch = (query: string) => {
-    setSearchQuery(query)
-    updateParams({ search: query })
-  }
-
-  // Handle category filter
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category)
-    updateParams({ category: category === 'all' ? undefined : category })
-  }
-
-  // Handle sort change
-  const handleSortChange = (field: string) => {
-    setSortBy(field)
-    updateParams({ sortBy: field })
-  }
-
-  const handleOrderChange = (order: 'asc' | 'desc') => {
-    setSortOrder(order)
-    updateParams({ order })
-  }
-
-  // Clear all filters
-  const clearFilters = () => {
-    setSearchQuery('')
-    setSelectedCategory('all')
-    setSortBy('title')
-    setSortOrder('asc')
-    updateParams({
-      search: undefined,
-      category: undefined,
-      sortBy: 'title',
-      order: 'asc',
-    })
-  }
 
   if (error) {
     return <ErrorState error={error} />
@@ -105,20 +53,6 @@ export function ProductsListingClient({
 
   return (
     <div className='space-y-6'>
-      {/* TODO: Add filters */}
-      {/* <ProductFilters
-        searchQuery={searchQuery}
-        selectedCategory={selectedCategory}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        total={total}
-        onSearchChange={handleSearch}
-        onCategoryChange={handleCategoryChange}
-        onSortChange={handleSortChange}
-        onOrderChange={handleOrderChange}
-        onClearFilters={clearFilters}
-      /> */}
-
       <ResultsHeader
         total={total}
         viewMode={viewMode}
