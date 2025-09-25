@@ -2,13 +2,13 @@
 
 import { useTenant } from '@/components/providers/TenantProvider'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/lib/providers/StoreProvider'
+import { Badge } from '@/components/ui/badge'
+import { useCart } from '@/lib/providers/StoreProvider'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { ShoppingCart } from 'lucide-react'
 import MobileMenu from './MobileMenu'
-import { UserMenu } from './UserMenu'
 
 type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean
@@ -22,9 +22,17 @@ export default function PublicHeader({
   ...props
 }: HeaderProps) {
   const [offset, setOffset] = useState(0)
-  const { openLoginModal, isAuthenticated } = useAuth()
+  const [cartBadgePulse, setCartBadgePulse] = useState(false)
+  const [previousTotalItems, setPreviousTotalItems] = useState(0)
+  const { totalItems, items } = useCart()
   const { config } = useTenant()
-  const router = useRouter()
+
+  // Debug cart state
+  console.log('🛒 Header cart state:', {
+    totalItems,
+    itemsCount: items.length,
+    items,
+  })
 
   useEffect(() => {
     const onScroll = () => {
@@ -38,11 +46,17 @@ export default function PublicHeader({
     return () => document.removeEventListener('scroll', onScroll)
   }, [])
 
-  const handleLogin = useCallback(() => {
-    openLoginModal(() => {
-      router.push('/find-cars')
-    })
-  }, [openLoginModal, router])
+  // Cart badge animation effect
+  useEffect(() => {
+    if (totalItems > previousTotalItems && totalItems > 0) {
+      setCartBadgePulse(true)
+      // Reset pulse after animation
+      setTimeout(() => setCartBadgePulse(false), 1000)
+    }
+    setPreviousTotalItems(totalItems)
+  }, [totalItems, previousTotalItems])
+
+  // Removed auth functionality - cart only
 
   return (
     <header
@@ -80,21 +94,30 @@ export default function PublicHeader({
 
         {/* Navigation Section */}
         <nav className='hidden md:flex items-center gap-4 flex-1 ml-6'>
-          <Link href='/find-cars'>
+          <Link href='/products'>
             <Button variant='ghost' size='sm'>
-              Find Cars
+              Products
+            </Button>
+          </Link>
+          <Link href='/cart'>
+            <Button variant='ghost' size='sm' className='relative'>
+              <ShoppingCart className='h-4 w-4' />
+              {totalItems > 0 && (
+                <Badge
+                  variant='destructive'
+                  className={cn(
+                    'absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs transition-all duration-300',
+                    cartBadgePulse && 'cart-badge-pulse bg-green-500',
+                  )}
+                >
+                  {totalItems}
+                </Badge>
+              )}
             </Button>
           </Link>
         </nav>
 
-        {/* Auth Section */}
-        {isAuthenticated ? (
-          <UserMenu />
-        ) : (
-          <Button variant='ghost' size='sm' onClick={handleLogin}>
-            Log in
-          </Button>
-        )}
+        {/* Removed auth section - cart only */}
 
         {/* Mobile Menu */}
         <MobileMenu />

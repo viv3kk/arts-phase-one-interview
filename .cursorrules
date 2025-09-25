@@ -486,4 +486,6 @@ npm run test:config     # Validate tenant configs
 - **UI Components**: `docs/UI-COMPONENTS.md`
 - **Rendering Strategies**: `docs/RENDERING-STRATEGIES.md`
 
+Do not create docs, unless asked to do so.
+
 Follow these patterns consistently to maintain code quality, performance, and developer experience across the multi-tenant storefront application.

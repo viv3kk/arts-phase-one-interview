@@ -4,7 +4,7 @@
  */
 
 // Feature Components
-export * from './features/auth'
+// Auth components removed - cart-only app
 export * from './features/home'
 
 // Form Components

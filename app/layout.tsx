@@ -1,6 +1,6 @@
-import { ModalProvider } from '@/components/providers/ModalProvider'
 import { TenantProvider } from '@/components/providers/TenantProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { Toaster } from '@/components/ui/sonner'
 import { getAllFontVariables } from '@/lib/fonts'
 import { Providers } from '@/lib/providers/Providers'
 import { getTenantConfig } from '@/lib/tenant'
@@ -10,7 +10,6 @@ import {
   generateTenantMetadata,
 } from '@/lib/utils/seo-utils'
 // import { isDevelopment } from '@/lib/utils'
-import { AppInitializationProvider } from '@/lib/providers/AppInitializationProvider'
 import type { Metadata, Viewport } from 'next'
 import { headers } from 'next/headers'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
@@ -104,11 +103,7 @@ export default async function RootLayout({
           <Providers>
             <TenantProvider initialConfig={config}>
               <ThemeProvider>
-                <ModalProvider>
-                  <AppInitializationProvider>
-                    {children}
-                  </AppInitializationProvider>
-                </ModalProvider>
+                {children}
 
                 {/* Development tools - only show in development */}
                 {/* {isDevelopment() && <DevTools />} */}
@@ -119,6 +114,9 @@ export default async function RootLayout({
 
         {/* Portal container for modals */}
         <div id='modal-root' />
+
+        {/* Toast notifications */}
+        <Toaster />
       </body>
     </html>
   )

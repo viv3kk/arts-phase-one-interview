@@ -1,7 +1,20 @@
 /**
- * Service hooks exports
+ * Service hooks exports - Products only
  */
 
-export * from './auth-hooks'
-export * from './renter-hooks'
-export * from './upload-hooks'
+// Products hooks
+export {
+  useProducts,
+  useProduct,
+  useProductSearch,
+  useProductCategories,
+  useProductCategoryList,
+  useProductsByCategory,
+  useCreateProduct,
+  useUpdateProduct,
+  useDeleteProduct,
+  useProductsManagement,
+  useProductsListing,
+  useProductSearchDebounced,
+  productsKeys,
+} from './products-hooks'

@@ -1,22 +1,37 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/lib/providers/StoreProvider'
-import { Menu, X } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { useCart } from '@/lib/providers/StoreProvider'
+import { cn } from '@/lib/utils'
+import { Menu, X, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 
 function MobileMenu() {
   const [open, setOpen] = useState(false)
-  const { openLoginModal, isAuthenticated } = useAuth()
-  const router = useRouter()
+  const [cartBadgePulse, setCartBadgePulse] = useState(false)
+  const [previousTotalItems, setPreviousTotalItems] = useState(0)
+  const { totalItems, items } = useCart()
 
-  const handleLogin = useCallback(() => {
-    openLoginModal(() => {
-      router.push('/dashboard')
-    })
-  }, [openLoginModal, router])
+  // Debug cart state
+  console.log('🛒 MobileMenu cart state:', {
+    totalItems,
+    itemsCount: items.length,
+    items,
+  })
+
+  // Cart badge animation effect
+  useEffect(() => {
+    if (totalItems > previousTotalItems && totalItems > 0) {
+      setCartBadgePulse(true)
+      // Reset pulse after animation
+      setTimeout(() => setCartBadgePulse(false), 1000)
+    }
+    setPreviousTotalItems(totalItems)
+  }, [totalItems, previousTotalItems])
+
+  // Removed auth functionality - cart only
 
   const toggleMenu = useCallback(() => {
     setOpen(prev => !prev)
@@ -39,40 +54,34 @@ function MobileMenu() {
           <div className='mx-auto max-w-screen-xl px-6 py-4 flex flex-col gap-3'>
             <nav className='flex flex-col gap-2'>
               <Link
-                href='/find-cars'
+                href='/products'
                 className='text-sm font-medium hover:underline py-2'
               >
-                Find Cars
+                Products
               </Link>
               <Link
-                href='/bookings'
-                className='text-sm font-medium hover:underline py-2'
+                href='/cart'
+                className='text-sm font-medium hover:underline py-2 flex items-center gap-2'
               >
-                Bookings
+                <ShoppingCart className='h-4 w-4' />
+                Cart
+                {totalItems > 0 && (
+                  <Badge
+                    variant='destructive'
+                    className={cn(
+                      'text-xs transition-all duration-300',
+                      cartBadgePulse && 'cart-badge-pulse bg-green-500',
+                    )}
+                  >
+                    {totalItems}
+                  </Badge>
+                )}
               </Link>
             </nav>
 
             <div className='border-t border-gray-200 my-2' />
 
-            <div className='flex flex-col gap-2'>
-              {isAuthenticated ? (
-                <Link
-                  href='/dashboard'
-                  className='text-sm font-medium hover:underline py-2'
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='justify-start'
-                  onClick={handleLogin}
-                >
-                  Log in
-                </Button>
-              )}
-            </div>
+            {/* Removed auth section - cart only */}
           </div>
         </div>
       )}

@@ -5,13 +5,18 @@
 // API types
 export * from './api'
 
-// Base service types
-export * from '../services/base/types'
-
 // Feature-specific types
-export * from './auth.types'
-export * from './hooks.types'
+export * from './products.types'
+// hooks.types removed - cart-only app
 export * from './store.types'
 
-// Note: vehicle.ts and tenant.ts have conflicts with base types
-// Import these directly where needed to avoid ambiguity
+// Base service types (import specific types to avoid conflicts)
+export type {
+  HttpResponse,
+  RequestConfig,
+  ServiceError,
+  ValidationResult,
+  TenantContext,
+} from '../services/base/types'
+
+// Note: Import tenant.ts and other base types directly where needed to avoid ambiguity

@@ -1,12 +1,8 @@
 /**
- * Service layer exports - Products only
+ * Products Service module exports
  */
 
-// Base types and utilities
-export * from './base/types'
-
-// Products service
-export { productsService } from './products'
+export { ProductsService, productsService } from './products-service'
 export type {
   CreateProductRequest,
   Product,
@@ -20,8 +16,4 @@ export type {
   ProductSearchParams,
   ProductSearchResponse,
   UpdateProductRequest,
-} from './products'
-
-// Configuration
-export * from '../config/api-endpoints'
-export * from '../config/service-config'
+} from './products-service'

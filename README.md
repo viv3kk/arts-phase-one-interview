@@ -1,18 +1,4 @@
-# Multi-Tenant Starter Template
-
-A modern, high-performance multi-tenant starter template built with **Next.js 15**, **shadcn/ui**, and **Tailwind CSS v4**. Features sophisticated theming, optimized rendering strategies, and enterprise-grade architecture ready for customization.
-
-## ✨ Features
-
-- **🏢 Multi-Tenancy**: Subdomain-based tenant routing with isolated configurations
-- **🎨 Dynamic Theming**: Server-side theme injection with shadcn/ui integration
-- **⚡ Performance**: ISR, SSG, and SSR strategies for optimal loading
-- **🧩 Component Library**: Beautiful, accessible UI with shadcn/ui components
-- **📱 Responsive**: Mobile-first design with Tailwind CSS v4
-- **🔍 SEO Optimized**: Dynamic metadata and structured data per tenant
-- **🔧 Type Safe**: Full TypeScript implementation with strict types
-- **🔐 Authentication**: OTP-based authentication system
-- **🚀 Ready to Customize**: Clean starter template for rapid development
+# Products Storefront
 
 ## 🚀 Quick Start
 
@@ -23,191 +9,291 @@ npm install
 # Start development server
 npm run dev
 
-# Visit different tenants
-open http://localhost:3000                    # Ocean theme (default)
-open http://abc-rental.localhost:3000         # Fire theme (red)
-open http://xyz-rental.localhost:3000         # Forest theme (green)
+# Visit the application
+open http://localhost:3000                    # Home page
+open http://localhost:3000/products          # Product catalog
+open http://localhost:3000/cart             # Shopping cart
 ```
 
-## 🎨 Theme System
+A modern, high-performance e-commerce storefront built with **Next.js 15**, **shadcn/ui**, **Tailwind CSS v4**, and **Zustand**. Features product listings, detailed product pages, shopping cart functionality, and responsive design optimized for mobile-first experiences.
 
-### Available Themes
+## ✨ Features
 
-- **🌊 Ocean**: `#2563eb` - Professional, trustworthy (default)
-- **🔥 Fire**: `#dc2626` - Bold, energetic (automotive/sports)
-- **🌲 Forest**: `#059669` - Natural, sustainable (eco-friendly)
+- **🛍️ Product Catalog**: Browse products with search, filtering, and pagination
+- **📱 Product Details**: Rich product pages with image galleries and reviews
+- **🛒 Shopping Cart**: Persistent cart with quantity controls and animations
+- **🎨 Modern UI**: Beautiful, accessible components with shadcn/ui
+- **📱 Mobile-First**: Responsive design optimized for all devices
+- **⚡ Performance**: ISR for product pages with optimal caching
+- **🔧 Type Safe**: Full TypeScript implementation with strict types
+- **🔄 State Management**: Zustand for cart state with persistence
+- **🎯 Real-time Updates**: Cart badge animations and toast notifications
 
-### Usage Example
+## 🛍️ Product Features
 
-```tsx
-// Components automatically adapt to tenant themes
-<Button>Primary Action</Button>               // Uses theme primary color
-<Card>Themed content</Card>                   // Adapts borders and backgrounds
-<Badge variant="outline">Status</Badge>       // Themed badges
-```
+### Product Catalog
+
+- **Search & Filter**: Find products by name, category, or price range
+- **Pagination**: Navigate through large product catalogs efficiently
+- **Responsive Grid**: Mobile-first design with card and list views
+- **Real-time Updates**: Instant search results with debounced input
+
+### Product Details
+
+- **Rich Media**: High-quality product images with thumbnail navigation
+- **Detailed Information**: Specifications, reviews, and pricing
+- **Quantity Controls**: Add multiple items with intuitive controls
+- **Stock Management**: Real-time stock availability and limits
+
+### Shopping Cart
+
+- **Persistent State**: Cart items saved across browser sessions
+- **Quantity Management**: Update quantities with +/- controls
+- **Price Calculations**: Automatic totals with discount support
+- **Visual Feedback**: Animated cart badge and toast notifications
 
 ## 🏗️ Architecture
 
 ### Rendering Strategies
 
-| Content Type    | Strategy | Cache Duration | Use Case                         |
-| --------------- | -------- | -------------- | -------------------------------- |
-| Landing pages   | **ISR**  | 1 hour         | Tenant content, periodic updates |
-| Static pages    | **SSG**  | Build time     | About, terms, privacy            |
-| User dashboards | **SSR**  | Real-time      | Dynamic, user-specific           |
+| Content Type  | Strategy | Cache Duration | Use Case                          |
+| ------------- | -------- | -------------- | --------------------------------- |
+| Product pages | **ISR**  | 1 hour         | Product details, periodic updates |
+| Static pages  | **SSG**  | Build time     | Home, about, terms                |
+| Cart pages    | **SSR**  | Real-time      | User-specific cart state          |
+
+### State Management
+
+```
+🔄 Zustand Store
+├── 🛒 Cart State (items, quantities, totals)
+├── 💾 Local Storage Persistence
+├── 🎯 Reactive Updates
+└── 🎨 UI State (loading, errors)
+```
 
 ### Component Architecture
 
 ```
 📦 shadcn/ui Components
-├── 🎨 Automatic theme adaptation via CSS variables
+├── 🎨 Consistent design system
 ├── ♿ Built-in accessibility features
-├── 🎯 Semantic class integration
-└── 📱 Responsive design patterns
+├── 🎯 Type-safe props
+└── 📱 Mobile-first responsive design
 ```
 
-## 📚 Documentation
-
-### Core Guides
-
-- **[📚 Documentation Index](./docs/README.md)** - **START HERE** - Complete documentation overview
-- **[⚡ Quick Reference](./docs/QUICK-REFERENCE.md)** - Developer cheat sheet for daily use
-- **[🎨 Theme System](./docs/THEME-SYSTEM.md)** - Complete theming implementation
-- **[🧩 UI Components](./docs/UI-COMPONENTS.md)** - shadcn/ui component usage
-- **[🏗️ Rendering Strategies](./docs/RENDERING-STRATEGIES.md)** - SSG/ISR/SSR guide
-- **[🏛️ Architecture Overview](./docs/ARCHITECTURE-OVERVIEW.md)** - System design
-
-### Additional Resources
-
-- [Development & Testing](DEVELOPMENT-TESTING.md)
-- [SEO Implementation](SEO-IMPLEMENTATION-SUMMARY.md)
-- [Performance Optimization](CSS-FIX-SUMMARY.md)
-
-## 🗂️ Project Structure
-
-```
-storefront/
-├── app/
-│   ├── layout.tsx              # Theme injection + providers
-│   ├── page.tsx               # Main tenant page (ISR)
-│   ├── globals.css            # Tailwind + shadcn/ui styles
-│   └── api/revalidate/        # Cache invalidation
-├── components/
-│   ├── providers/             # Theme & tenant context
-│   └── ui/                    # shadcn/ui components
-├── config/
-│   ├── tenants.json           # Tenant registry
-│   └── tenants/               # Individual tenant configs
-├── docs/                      # 📚 Complete documentation
-│   ├── README.md              # Documentation index
-│   ├── QUICK-REFERENCE.md     # Developer cheat sheet
-│   ├── THEME-SYSTEM.md        # Theme system guide
-│   ├── UI-COMPONENTS.md       # Component usage
-│   ├── RENDERING-STRATEGIES.md # SSG/ISR/SSR guide
-│   └── ARCHITECTURE-OVERVIEW.md # System architecture
-├── lib/
-│   ├── themes/                # Theme system core
-│   ├── types/                 # TypeScript definitions
-│   └── utils/                 # Helper functions
-├── middleware.ts              # Tenant detection
-└── next.config.js             # Optimized configuration
-```
-
-## 🛠️ Tech Stack
-
-### Core Framework
-
-- **[Next.js 15](https://nextjs.org)** - Full-stack React framework
-- **[React 18](https://react.dev)** - UI library with concurrent features
-- **[TypeScript](https://typescriptlang.org)** - Type-safe development
-
-### Styling & UI
-
-- **[Tailwind CSS v4](https://tailwindcss.com)** - Utility-first CSS framework
-- **[shadcn/ui](https://ui.shadcn.com)** - High-quality component library
-- **CSS Custom Properties** - Dynamic theming system
-
-### Performance & Optimization
-
-- **ISR** - Incremental Static Regeneration for optimal caching
-- **SSG** - Static Site Generation for marketing pages
-- **SSR** - Server-Side Rendering for dynamic content
-- **Bundle Optimization** - Tree-shaking and code splitting
-
-## 🚀 Getting Started
+## 🚀 How to Run Locally
 
 ### Prerequisites
 
 - Node.js 18+
 - npm or yarn
 
-### Installation
+### Installation & Setup
 
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd storefront
+cd products-storefront
 
 # Install dependencies
 npm install
 
 # Start development server
 npm run dev
+
+# Open in browser
+open http://localhost:3000
 ```
 
-### Development Workflow
+### Development Commands
 
 ```bash
-# Start with theme system
-npm run dev                                   # Start development
-
-# Test different tenants
-curl "http://abc-rental.localhost:3001"      # Fire theme
-curl "http://xyz-rental.localhost:3001"      # Forest theme
-
-# Build for production
-npm run build
+# Development
+npm run dev              # Start dev server with hot reload
+npm run build           # Build for production
+npm run start           # Start production server
+npm run lint            # Run ESLint
+npm run type-check      # TypeScript type checking
 ```
 
-## 🎯 Usage Examples
+## 🗂️ Project Structure
 
-### Creating Themed Components
-
-```tsx
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
-function ProductCard({ product }) {
-  return (
-    <Card className='h-full'>
-      <CardHeader>
-        <CardTitle>{product.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className='text-muted-foreground'>{product.description}</p>
-        <Button className='w-full mt-4'>Book Now</Button>
-      </CardContent>
-    </Card>
-  )
-}
+```
+products-storefront/
+├── app/
+│   ├── (public)/
+│   │   ├── layout.tsx         # Public layout with header
+│   │   ├── page.tsx          # Home page
+│   │   ├── products/         # Product pages (ISR)
+│   │   └── cart/            # Cart page (SSR)
+│   ├── layout.tsx            # Root layout with providers
+│   └── globals.css           # Global styles + animations
+├── components/
+│   ├── features/
+│   │   ├── products/        # Product components
+│   │   └── cart/           # Cart components
+│   ├── header/             # Navigation components
+│   ├── providers/          # Context providers
+│   └── ui/                # shadcn/ui components
+├── lib/
+│   ├── services/          # API services & hooks
+│   ├── stores/           # Zustand store
+│   ├── types/            # TypeScript definitions
+│   └── utils/            # Helper functions
+├── middleware.ts          # Route handling
+└── next.config.js        # Next.js configuration
 ```
 
-### Adding New Tenants
+## 🛠️ Tech Stack
 
-```json
-// config/tenants/new-tenant.json
-{
-  "id": "new-tenant",
-  "name": "New Tenant",
-  "theme": "forest",
-  "content": {
-    "hero": {
-      "headline": "Welcome to New Tenant",
-      "description": "Your trusted service provider"
-    }
-  }
-}
-```
+### Core Framework
+
+- **[Next.js 15](https://nextjs.org)** - App Router with server components
+- **[React 18](https://react.dev)** - Concurrent features and hooks
+- **[TypeScript](https://typescriptlang.org)** - Type-safe development
+
+### UI & Styling
+
+- **[Tailwind CSS v4](https://tailwindcss.com)** - Utility-first CSS
+- **[shadcn/ui](https://ui.shadcn.com)** - Accessible component library
+- **Mobile-First Design** - Responsive layouts and touch-friendly interactions
+
+### State Management
+
+- **[Zustand](https://zustand-demo.pmnd.rs)** - Lightweight state management
+- **Local Storage** - Cart persistence across sessions
+- **React Query** - Server state management and caching
+
+### Data & API
+
+- **[DummyJSON](https://dummyjson.com)** - Product data API
+- **React Query** - Data fetching, caching, and synchronization
+- **Service Layer** - Clean API abstraction
+
+## 💭 Thought Process & Trade-offs
+
+### Design Decisions
+
+**1. Products-Only Focus**
+
+- **Decision**: Simplified from multi-tenant to single-purpose storefront
+- **Rationale**: Focus on core e-commerce functionality without complexity
+- **Trade-off**: Less flexible but more maintainable and performant
+
+**2. Zustand for Cart State**
+
+- **Decision**: Chose Zustand over Redux Toolkit or Context API
+- **Rationale**: Lightweight, simple API, excellent TypeScript support
+- **Trade-off**: Less ecosystem than Redux, but simpler mental model
+
+**3. ISR for Product Pages**
+
+- **Decision**: Used ISR (1-hour revalidation) for product detail pages
+- **Rationale**: Balance between performance and data freshness
+- **Trade-off**: Slight delay in updates vs. better performance
+
+**4. Mobile-First Design**
+
+- **Decision**: Prioritized mobile experience over desktop
+- **Rationale**: Most e-commerce traffic is mobile, better UX
+- **Trade-off**: More complex responsive code, but better user experience
+
+**5. Service Layer Architecture**
+
+- **Decision**: Three-layer architecture (API → Service → Hooks)
+- **Rationale**: Clean separation, testable, maintainable
+- **Trade-off**: More boilerplate, but better organization
+
+### Technical Trade-offs
+
+**Performance vs. Features**
+
+- ✅ **Chose**: ISR caching for performance
+- ❌ **Sacrificed**: Real-time updates for better loading speeds
+
+**Simplicity vs. Flexibility**
+
+- ✅ **Chose**: Single-purpose storefront
+- ❌ **Sacrificed**: Multi-tenant flexibility for maintainability
+
+**State Management**
+
+- ✅ **Chose**: Zustand for simplicity
+- ❌ **Sacrificed**: Redux ecosystem for lighter bundle
+
+## ⚠️ Known Limitations
+
+### Current Limitations
+
+**1. No User Authentication**
+
+- **Impact**: No user accounts, order history, or personalized features
+- **Workaround**: Cart persists in localStorage only
+- **Future**: Could add auth with NextAuth.js or similar
+
+**2. No Payment Processing**
+
+- **Impact**: No checkout functionality beyond cart management
+- **Workaround**: Cart is ready for payment integration
+- **Future**: Could integrate Stripe, PayPal, or other payment providers
+
+**3. No Inventory Management**
+
+- **Impact**: Stock levels are display-only, no real inventory tracking
+- **Workaround**: Uses DummyJSON stock data
+- **Future**: Could add real inventory API integration
+
+**4. No Order Management**
+
+- **Impact**: No order creation, tracking, or management
+- **Workaround**: Focus on product browsing and cart functionality
+- **Future**: Could add order management system
+
+**5. Limited Product Data**
+
+- **Impact**: Uses DummyJSON API with limited product information
+- **Workaround**: Good for demo, but limited real-world data
+- **Future**: Could integrate with real e-commerce APIs
+
+### Performance Considerations
+
+**1. Image Optimization**
+
+- **Current**: Basic Next.js Image optimization
+- **Limitation**: No advanced image processing or CDN
+- **Future**: Could add Cloudinary or similar service
+
+**2. Search Performance**
+
+- **Current**: Client-side search with debouncing
+- **Limitation**: No server-side search or advanced filtering
+- **Future**: Could add Elasticsearch or Algolia integration
+
+**3. Caching Strategy**
+
+- **Current**: ISR with 1-hour revalidation
+- **Limitation**: No advanced cache invalidation
+- **Future**: Could add more sophisticated caching strategies
+
+## 🎯 Key Features Implemented
+
+### ✅ Completed Features
+
+- **Product Catalog**: Search, filter, pagination, and responsive grid/list views
+- **Product Details**: Rich product pages with image galleries and reviews
+- **Shopping Cart**: Persistent cart with quantity controls and animations
+- **Mobile-First UI**: Responsive design with touch-friendly interactions
+- **State Management**: Zustand store with localStorage persistence
+- **Performance**: ISR caching for optimal loading speeds
+- **Type Safety**: Full TypeScript implementation
+
+### 🔄 Recent Improvements
+
+- **Cart Header Updates**: Fixed reactive cart badge updates
+- **Toast Notifications**: Enhanced user feedback for cart actions
+- **Mobile Navigation**: Responsive header with cart badge animations
+- **Hydration Fixes**: Resolved server-client rendering mismatches
 
 ## 🤝 Contributing
 
@@ -223,4 +309,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Next.js 15, shadcn/ui, and Tailwind CSS v4**
+**Built with ❤️ using Next.js 15, shadcn/ui, Tailwind CSS v4, and Zustand**

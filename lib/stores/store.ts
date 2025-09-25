@@ -7,26 +7,15 @@
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { createStore } from 'zustand/vanilla'
 import {
-  AuthState,
-  createAuthSlice,
-  initialAuthState,
-} from './slices/auth.slice'
-import {
-  UserState,
-  createUserSlice,
-  initialUserState,
-} from './slices/user.slice'
-import {
-  RenterState,
-  createRenterSlice,
-  initialRenterState,
-} from './slices/renter.slice'
+  CartState,
+  createCartSlice,
+  initialCartState,
+} from './slices/cart.slice'
 
 /**
- * Combined store state interface
- * Extends all slice states into a unified interface
+ * Store state interface - only cart functionality
  */
-export interface StoreState extends AuthState, UserState, RenterState {
+export interface StoreState extends CartState {
   // Store metadata
   _storeVersion: string
   _lastUpdated: string
@@ -44,12 +33,10 @@ interface StorePersistConfig {
 }
 
 /**
- * Default initial state combining all slices
+ * Default initial state - only cart
  */
 const defaultInitialState = {
-  ...initialAuthState,
-  ...initialUserState,
-  ...initialRenterState,
+  ...initialCartState,
   _storeVersion: '1.0.0',
   _lastUpdated: new Date().toISOString(),
 } as const satisfies Partial<StoreState>
@@ -58,15 +45,13 @@ const defaultInitialState = {
  * Store persistence configuration factory
  */
 const createPersistConfig = (): StorePersistConfig => ({
-  name: 'storefront-auth-store',
+  name: 'storefront-cart-store',
   version: 1,
 
-  // Minimal persistence - only essential auth data
-  // User profile is fetched from API, not persisted
+  // Persist cart items only
   partialize: (state: StoreState) => ({
-    authKey: state.authKey,
-    userId: state.userId,
-    isAuthenticated: state.isAuthenticated,
+    items: state.items,
+    isOpen: state.isOpen,
     _storeVersion: state._storeVersion,
     _lastUpdated: state._lastUpdated,
   }),
@@ -107,14 +92,8 @@ export const createAppStore = (initialState: Partial<StoreState> = {}) => {
       // Initialize with merged state
       ...mergedInitialState,
 
-      // Add auth slice actions
-      ...createAuthSlice(set, get, api),
-
-      // Add user slice actions
-      ...createUserSlice(set, get, api),
-
-      // Add renter slice actions
-      ...createRenterSlice(set, get, api),
+      // Add cart slice actions
+      ...createCartSlice(set, get, api),
     }))
   }
 
@@ -125,14 +104,8 @@ export const createAppStore = (initialState: Partial<StoreState> = {}) => {
         // Initialize with merged state
         ...mergedInitialState,
 
-        // Add auth slice actions
-        ...createAuthSlice(set, get, api),
-
-        // Add user slice actions
-        ...createUserSlice(set, get, api),
-
-        // Add renter slice actions
-        ...createRenterSlice(set, get, api),
+        // Add cart slice actions
+        ...createCartSlice(set, get, api),
       }),
       createPersistConfig(),
     ),

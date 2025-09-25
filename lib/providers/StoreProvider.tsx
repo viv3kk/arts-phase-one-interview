@@ -1,13 +1,13 @@
 /**
  * Store Provider with proper SSR/SSG hydration handling
- * Follows the official Zustand Next.js guide pattern
+ * Simplified for cart-only functionality
  */
 'use client'
 
 import type { AppStore } from '@/lib/stores/store'
 import { createAppStore, StoreState } from '@/lib/stores/store'
 import { createContext, useContext, useEffect, useRef } from 'react'
-import { useStore } from 'zustand'
+import { useStore as useZustandStore } from 'zustand'
 import { useShallow } from 'zustand/react/shallow'
 
 /**
@@ -90,8 +90,6 @@ export function AppStoreProvider({
   )
 }
 
-// Note: Use AppStoreProvider directly - no aliases for cleaner architecture
-
 /**
  * Hook to use the store with type-safe selectors
  * Must be used within StoreProvider
@@ -103,126 +101,81 @@ export function useAppStore<T>(selector: (state: StoreState) => T): T {
     throw new Error('useAppStore must be used within StoreProvider')
   }
 
-  return useStore(store, selector)
+  return useZustandStore(store, selector)
 }
 
 /**
- * Hook to access auth state and actions only
- * Returns only auth-related properties for better separation of concerns
+ * Hook to access cart state and actions only
+ * Returns only cart-related properties for better separation of concerns
  */
-export const useAuth = (): import('@/lib/types/hooks.types').AuthHookResult => {
+export const useCart = () => {
   const store = useContext(StoreContext)
 
   if (!store) {
-    throw new Error('useAuth must be used within StoreProvider')
+    throw new Error('useCart must be used within StoreProvider')
   }
 
-  return useStore(
+  return useZustandStore(
     store,
-    useShallow(state => ({
-      // Auth state
-      authKey: state.authKey,
-      userId: state.userId,
-      isAuthenticated: state.isAuthenticated,
-      otpRequestId: state.otpRequestId,
-      isGoogleAuthInProgress: state.isGoogleAuthInProgress,
-      authMethod: state.authMethod,
-      isLoading: state.isLoading, // ✅ Shared pattern
-      error: state.error, // ✅ Shared pattern
+    useShallow(state => {
+      // Calculate computed properties reactively
+      const totalItems =
+        state.items?.reduce((total, item) => total + item.quantity, 0) || 0
+      const totalPrice =
+        state.items?.reduce((total, item) => {
+          const itemPrice = item.discountPercentage
+            ? item.price - (item.price * item.discountPercentage) / 100
+            : item.price
+          return total + itemPrice * item.quantity
+        }, 0) || 0
+      const itemCount = state.items?.length || 0
+      const isEmpty = itemCount === 0
 
-      // Modal state
-      isModalOpen: state.isModalOpen,
-      onSuccessCallback: state.onSuccessCallback,
+      console.log('🛒 useCart hook state:', {
+        items: state.items,
+        totalItems,
+        itemCount,
+        isEmpty,
+      })
 
-      // Auth actions
-      setAuthData: state.setAuthData,
-      setOtpRequestId: state.setOtpRequestId,
-      setIsGoogleAuthInProgress: state.setIsGoogleAuthInProgress,
-      setAuthMethod: state.setAuthMethod,
-      setLoading: state.setLoading,
-      setError: state.setError,
-      clearError: state.clearError,
-      clearAuth: state.clearAuth,
-      setIsAuthenticated: state.setIsAuthenticated,
+      return {
+        // Cart state
+        items: state.items,
+        isOpen: state.isOpen,
+        isLoading: state.isLoading,
+        error: state.error,
 
-      // Modal actions
-      openLoginModal: state.openLoginModal,
-      closeLoginModal: state.closeLoginModal,
-      setSuccessCallback: state.setSuccessCallback,
-      loginSuccessCallback: state.loginSuccessCallback,
-
-      // Computed properties
-      hasValidSession: state.hasValidSession,
-      needsAuthentication: state.needsAuthentication,
-    })),
-  )
-}
-
-/**
- * Hook to access user state and actions only
- * Returns only user-related properties for better separation of concerns
- */
-export const useUser = (): import('@/lib/types/hooks.types').UserHookResult => {
-  const store = useContext(StoreContext)
-
-  if (!store) {
-    throw new Error('useUser must be used within StoreProvider')
-  }
-
-  return useStore(
-    store,
-    useShallow(state => ({
-      // User state
-      profile: state.profile,
-      isLoading: state.isLoading, // ✅ Shared pattern
-      error: state.error, // ✅ Shared pattern
-      // User actions
-      setProfile: state.setProfile,
-      updateProfile: state.updateProfile,
-      clearProfile: state.clearProfile,
-      setLoading: state.setLoading,
-      setError: state.setError,
-      clearError: state.clearError,
-      // Computed getters
-      needsProfileCompletion: state.needsProfileCompletion,
-      hasValidProfile: state.hasValidProfile,
-      getUserDisplayName: state.getUserDisplayName,
-    })),
-  )
-}
-
-/**
- * Hook to access renter state and actions only
- * Returns only renter-related properties for better separation of concerns
- * Follows the exact same pattern as useAuth and useUser
- */
-export const useRenter =
-  (): import('@/lib/types/hooks.types').RenterHookResult => {
-    const store = useContext(StoreContext)
-
-    if (!store) {
-      throw new Error('useRenter must be used within StoreProvider')
-    }
-
-    return useStore(
-      store,
-      useShallow(state => ({
-        // Renter state
-        renterProfile: state.renterProfile,
-        isLoading: state.isLoading, // ✅ Shared pattern
-        error: state.error, // ✅ Shared pattern
-        // Renter actions
-        setRenterProfile: state.setRenterProfile,
-        updateRenterProfile: state.updateRenterProfile,
-        clearRenterProfile: state.clearRenterProfile,
+        // Cart actions
+        addItem: state.addItem,
+        removeItem: state.removeItem,
+        updateQuantity: state.updateQuantity,
+        clearCart: state.clearCart,
+        toggleCart: state.toggleCart,
+        setCartOpen: state.setCartOpen,
         setLoading: state.setLoading,
         setError: state.setError,
         clearError: state.clearError,
-        // Computed getters
-        hasInsuranceProof: state.hasInsuranceProof,
-        hasDriverLicense: state.hasDriverLicense,
-        isRenterProfileComplete: state.isRenterProfileComplete,
-        getRenterDisplayName: state.getRenterDisplayName,
-      })),
-    )
+
+        // Computed properties (calculated reactively)
+        totalItems,
+        totalPrice,
+        itemCount,
+        isEmpty,
+      }
+    }),
+  )
+}
+
+/**
+ * Hook to access the entire store
+ * Use this for cart and other global state access
+ */
+export const useStore = <T,>(selector: (state: StoreState) => T): T => {
+  const store = useContext(StoreContext)
+
+  if (!store) {
+    throw new Error('useStore must be used within StoreProvider')
   }
+
+  return useZustandStore(store, selector)
+}

@@ -1,88 +1,28 @@
 /**
- * API endpoint configurations
+ * API endpoint configurations for Products
  */
 
 // Base API configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.example.com',
+  BASE_URL: 'https://dummyjson.com',
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000,
 } as const
 
-// API endpoint paths
+// Products API endpoints (DummyJSON API)
 export const API_ENDPOINTS = {
-  // Authentication endpoints
-  AUTH: {
-    SEND_OTP: '/api/auth/renter/login/mobile/otp/send',
-    VERIFY_OTP: '/api/auth/renter/login/mobile/otp/verify',
-    GOOGLE_AUTH: '/api/google/auth', // Your backend endpoint
-    LOGOUT: '/api/auth/logout',
-    USER_PROFILE: '/api/user/profile',
-    IDENTITY_VERIFICATION: '/api/secure/renter/identity-verification',
-  },
-
-  // Renter endpoints
-  RENTER: {
-    GET_PROFILE: '/api/secure/renter',
-    UPDATE_PROFILE: '/api/secure/renter',
-    PROFILE: '/api/renter/profile',
-    DOCUMENTS: '/api/renter/documents',
-    VERIFICATION_STATUS: '/api/renter/verification-status',
-  },
-
-  // Renter booking endpoints
-  RENTER_BOOKING: {
-    LIST: '/api/secure/renter/bookings',
-    DETAIL: (bookingId: string) => `/api/secure/renter/bookings/${bookingId}`,
-    UPDATE_DOCUMENTS: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/document`,
-    CHECK_IN_OUT: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/check-in-out-detail`,
-  },
-
-  // Checkout endpoints
-  CHECKOUT: {
-    CREATE_CHECKOUT: '/api/secure/checkout/pre',
-    GET_CHECKOUT: (id: string) => `/api/secure/checkout/${id}`,
-    CREATE_STRIPE_SESSION: (id: string) =>
-      `/api/secure/checkout/${id}/create-session`,
-    GET_INVOICE: (id: string) => `/api/secure/checkout/${id}/invoice`,
-    CALCULATE_PRICE: '/api/checkout/calculate-price',
-    CONFIRM_PAYMENT: (id: string) => `/api/checkout/session/${id}/confirm`,
-    CANCEL: (id: string) => `/api/checkout/session/${id}/cancel`,
-  },
-
-  // File upload endpoints
-  UPLOAD: {
-    FILE: '/api/upload/file',
-    MULTIPLE: '/api/upload/multiple',
-    DELETE: (id: string) => `/api/upload/${id}`,
-    PROGRESS: (id: string) => `/api/upload/progress/${id}`,
-    GENERIC_FILE: '/api/secure/generic-file-upload',
-  },
-
-  // Vehicle endpoints (public business vehicle controller)
-  VEHICLES: {
-    FILTERS: '/api/public/filter/PUBLIC_VEHICLE_FILTERS',
-    LIST: '/api/public/business/vehicles',
-    DETAIL: (vehicleId: string) => `/api/public/business/vehicles/${vehicleId}`,
-    ADDONS: (vehicleId: string) =>
-      `/api/public/business/vehicles/${vehicleId}/add-on`,
-  },
-
-  // Chat endpoints
-  CHAT: {
-    GET_CHAT: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/chat`,
-    SEND_MESSAGE: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/chat/message`,
-    REACT_TO_MESSAGE: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/chat/message/react`,
-    MARK_MESSAGES_READ: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/chat/message/read`,
-    GET_UNREAD_MESSAGES: (bookingId: string) =>
-      `/api/secure/renter/bookings/${bookingId}/chat/message/unread`,
+  PRODUCTS: {
+    LIST: 'https://dummyjson.com/products',
+    DETAIL: (id: number) => `https://dummyjson.com/products/${id}`,
+    SEARCH: 'https://dummyjson.com/products/search',
+    CATEGORIES: 'https://dummyjson.com/products/categories',
+    CATEGORY_LIST: 'https://dummyjson.com/products/category-list',
+    BY_CATEGORY: (category: string) =>
+      `https://dummyjson.com/products/category/${category}`,
+    CREATE: 'https://dummyjson.com/products/add',
+    UPDATE: (id: number) => `https://dummyjson.com/products/${id}`,
+    DELETE: (id: number) => `https://dummyjson.com/products/${id}`,
   },
 } as const
 
