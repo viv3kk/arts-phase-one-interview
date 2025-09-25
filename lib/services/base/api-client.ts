@@ -60,18 +60,19 @@ export interface ServiceConfig {
 export class ApiClient {
   private config: ApiClientConfig
   private serviceConfig: ServiceConfig
-  private authInterceptor?: ((
-    url: string,
-    config: RequestConfig,
-    context: RequestContext,
-  ) =>
-    | Promise<{ url: string; config: RequestConfig }>
-    | { url: string; config: RequestConfig }) | null
+  private authInterceptor?:
+    | ((
+        url: string,
+        config: RequestConfig,
+        context: RequestContext,
+      ) =>
+        | Promise<{ url: string; config: RequestConfig }>
+        | { url: string; config: RequestConfig })
+    | null
 
-  private errorInterceptor?: ((
-    error: any,
-    context: RequestContext,
-  ) => Promise<any> | any) | null
+  private errorInterceptor?:
+    | ((error: any, context: RequestContext) => Promise<any> | any)
+    | null
 
   constructor(config: ApiClientConfig, serviceConfig?: ServiceConfig) {
     this.config = config
@@ -270,9 +271,7 @@ export class ApiClient {
         processedConfig.timeout || this.config.timeout,
       ),
       credentials:
-        processedConfig.credentials ||
-        this.serviceConfig.credentials ||
-        'omit', // ✅ Service-level credentials with fallback
+        processedConfig.credentials || this.serviceConfig.credentials || 'omit', // ✅ Service-level credentials with fallback
     }
 
     // Add body and Content-Type for requests that support it
@@ -572,7 +571,6 @@ export class ApiClient {
 
     return null
   }
-
 
   /**
    * Update client configuration

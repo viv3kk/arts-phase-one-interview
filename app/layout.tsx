@@ -114,7 +114,7 @@ export default async function RootLayout({
 
         {/* Portal container for modals */}
         <div id='modal-root' />
-        
+
         {/* Toast notifications */}
         <Toaster />
       </body>

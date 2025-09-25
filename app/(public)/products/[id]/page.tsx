@@ -4,8 +4,7 @@
  */
 
 import { ProductDetailClient } from '@/components/features/products/ProductDetailClient'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+// Unused imports removed
 import { productsService } from '@/lib/services'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { QueryClient } from '@tanstack/react-query'
@@ -14,14 +13,15 @@ import { notFound } from 'next/navigation'
 export const revalidate = 3600 // Revalidate every hour (ISR)
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const productId = parseInt(params.id)
-  
+  const { id } = await params
+  const productId = parseInt(id)
+
   if (isNaN(productId)) {
     notFound()
   }
@@ -35,13 +35,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       queryFn: () => productsService.getProduct(productId),
       staleTime: 5 * 60 * 1000, // 5 minutes
     })
-  } catch (error) {
+  } catch {
     // If product doesn't exist, show 404
     notFound()
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className='container mx-auto px-4 py-8'>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ProductDetailClient productId={productId} />
       </HydrationBoundary>
@@ -50,11 +50,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 export async function generateMetadata({ params }: ProductPageProps) {
-  const productId = parseInt(params.id)
-  
+  const { id } = await params
+  const productId = parseInt(id)
+
   try {
     const product = await productsService.getProduct(productId)
-    
+
     return {
       title: `${product.title} | Store`,
       description: product.description,
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
         images: [product.thumbnail],
       },
     }
-  } catch (error) {
+  } catch {
     return {
       title: 'Product Not Found | Store',
       description: 'The requested product could not be found.',

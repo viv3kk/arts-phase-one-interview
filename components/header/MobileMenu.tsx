@@ -13,9 +13,13 @@ function MobileMenu() {
   const [cartBadgePulse, setCartBadgePulse] = useState(false)
   const [previousTotalItems, setPreviousTotalItems] = useState(0)
   const { totalItems, items } = useCart()
-  
+
   // Debug cart state
-  console.log('🛒 MobileMenu cart state:', { totalItems, itemsCount: items.length, items })
+  console.log('🛒 MobileMenu cart state:', {
+    totalItems,
+    itemsCount: items.length,
+    items,
+  })
 
   // Cart badge animation effect
   useEffect(() => {
@@ -62,11 +66,11 @@ function MobileMenu() {
                 <ShoppingCart className='h-4 w-4' />
                 Cart
                 {totalItems > 0 && (
-                  <Badge 
-                    variant='destructive' 
+                  <Badge
+                    variant='destructive'
                     className={cn(
                       'text-xs transition-all duration-300',
-                      cartBadgePulse && 'cart-badge-pulse bg-green-500'
+                      cartBadgePulse && 'cart-badge-pulse bg-green-500',
                     )}
                   >
                     {totalItems}

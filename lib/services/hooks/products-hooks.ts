@@ -8,7 +8,7 @@
 
 // Removed useAuth - cart-only app
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   CreateProductRequest,
   ProductQueryParams,
@@ -29,8 +29,10 @@ export const productsKeys = {
     [...productsKeys.all, 'search', params] as const,
   categories: () => [...productsKeys.all, 'categories'] as const,
   categoryList: () => [...productsKeys.all, 'categoryList'] as const,
-  byCategory: (category: string, params?: Omit<ProductQueryParams, 'category'>) =>
-    [...productsKeys.all, 'byCategory', category, params] as const,
+  byCategory: (
+    category: string,
+    params?: Omit<ProductQueryParams, 'category'>,
+  ) => [...productsKeys.all, 'byCategory', category, params] as const,
 }
 
 // ============================================================================
@@ -319,7 +321,7 @@ export function useProductsManagement() {
   } = useProducts()
 
   const {
-    createProduct,
+    createProduct: _createProduct,
     createProductAsync,
     isLoading: isCreating,
     error: createError,
@@ -327,7 +329,7 @@ export function useProductsManagement() {
   } = useCreateProduct()
 
   const {
-    updateProduct,
+    updateProduct: _updateProduct,
     updateProductAsync,
     isLoading: isUpdating,
     error: updateError,
@@ -335,7 +337,7 @@ export function useProductsManagement() {
   } = useUpdateProduct()
 
   const {
-    deleteProduct,
+    deleteProduct: _deleteProduct,
     deleteProductAsync,
     isLoading: isDeleting,
     error: deleteError,
@@ -344,7 +346,12 @@ export function useProductsManagement() {
 
   // Computed values
   const isLoading = isLoadingProducts || isCreating || isUpdating || isDeleting
-  const hasError = !!(productsError || createError || updateError || deleteError)
+  const hasError = !!(
+    productsError ||
+    createError ||
+    updateError ||
+    deleteError
+  )
 
   // Combined error handling
   const error = productsError || createError || updateError || deleteError
@@ -360,7 +367,10 @@ export function useProductsManagement() {
     }
   }
 
-  const handleUpdateProduct = async (id: number, data: UpdateProductRequest) => {
+  const handleUpdateProduct = async (
+    id: number,
+    data: UpdateProductRequest,
+  ) => {
     try {
       const result = await updateProductAsync({ id, data })
       return result
@@ -419,16 +429,9 @@ export function useProductsManagement() {
  */
 export function useProductsListing(initialParams?: ProductQueryParams) {
   const [params, setParams] = useState<ProductQueryParams>(initialParams || {})
-  
-  const {
-    products,
-    total,
-    skip,
-    limit,
-    isLoading,
-    error,
-    refetch,
-  } = useProducts(params)
+
+  const { products, total, skip, limit, isLoading, error, refetch } =
+    useProducts(params)
 
   // Calculate current page from the original params, not from skip
   const currentPage = params.page || Math.floor(skip / limit) + 1
@@ -485,7 +488,10 @@ export function useProductsListing(initialParams?: ProductQueryParams) {
 /**
  * Product search hook with debouncing
  */
-export function useProductSearchDebounced(searchQuery: string, debounceMs = 300) {
+export function useProductSearchDebounced(
+  searchQuery: string,
+  debounceMs = 300,
+) {
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery)
 
   // Debounce search query
@@ -497,13 +503,9 @@ export function useProductSearchDebounced(searchQuery: string, debounceMs = 300)
     return () => clearTimeout(timer)
   }, [searchQuery, debounceMs])
 
-  const {
-    products,
-    total,
-    isLoading,
-    error,
-    refetch,
-  } = useProductSearch({ q: debouncedQuery })
+  const { products, total, isLoading, error, refetch } = useProductSearch({
+    q: debouncedQuery,
+  })
 
   return {
     products,

@@ -4,8 +4,7 @@
  */
 
 import { ProductsListingClient } from '@/components/features/products/ProductsListingClient'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+// Unused imports removed
 import { productsService } from '@/lib/services'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { QueryClient } from '@tanstack/react-query'
@@ -30,10 +29,10 @@ export default async function ProductsPage() {
   })
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Products</h1>
-        <p className="text-muted-foreground">
+    <div className='container mx-auto px-4 py-8'>
+      <div className='mb-8'>
+        <h1 className='text-3xl font-bold text-foreground mb-2'>Products</h1>
+        <p className='text-muted-foreground'>
           Discover our wide range of products with advanced filtering and search
         </p>
       </div>
@@ -47,5 +46,6 @@ export default async function ProductsPage() {
 
 export const metadata = {
   title: 'Products | Store',
-  description: 'Browse our complete collection of products with advanced filtering and search capabilities.',
+  description:
+    'Browse our complete collection of products with advanced filtering and search capabilities.',
 }

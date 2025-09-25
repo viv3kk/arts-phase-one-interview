@@ -18,7 +18,8 @@ export const API_ENDPOINTS = {
     SEARCH: 'https://dummyjson.com/products/search',
     CATEGORIES: 'https://dummyjson.com/products/categories',
     CATEGORY_LIST: 'https://dummyjson.com/products/category-list',
-    BY_CATEGORY: (category: string) => `https://dummyjson.com/products/category/${category}`,
+    BY_CATEGORY: (category: string) =>
+      `https://dummyjson.com/products/category/${category}`,
     CREATE: 'https://dummyjson.com/products/add',
     UPDATE: (id: number) => `https://dummyjson.com/products/${id}`,
     DELETE: (id: number) => `https://dummyjson.com/products/${id}`,

@@ -7,7 +7,7 @@
 export { useHydration, useStoreHydration } from '../useHydration'
 
 // Store provider hooks exported directly from StoreProvider
-export { useAppStore, useAuth, useUser } from '@/lib/providers/StoreProvider'
+export { useAppStore, useCart } from '@/lib/providers/StoreProvider'
 
 // Usage pattern - import hooks directly from StoreProvider:
 // import { useAuth, useUser } from '@/lib/providers/StoreProvider'

@@ -119,21 +119,23 @@ export const useCart = () => {
     store,
     useShallow(state => {
       // Calculate computed properties reactively
-      const totalItems = state.items?.reduce((total, item) => total + item.quantity, 0) || 0
-      const totalPrice = state.items?.reduce((total, item) => {
-        const itemPrice = item.discountPercentage 
-          ? item.price - (item.price * item.discountPercentage / 100)
-          : item.price
-        return total + (itemPrice * item.quantity)
-      }, 0) || 0
+      const totalItems =
+        state.items?.reduce((total, item) => total + item.quantity, 0) || 0
+      const totalPrice =
+        state.items?.reduce((total, item) => {
+          const itemPrice = item.discountPercentage
+            ? item.price - (item.price * item.discountPercentage) / 100
+            : item.price
+          return total + itemPrice * item.quantity
+        }, 0) || 0
       const itemCount = state.items?.length || 0
       const isEmpty = itemCount === 0
 
-      console.log('🛒 useCart hook state:', { 
-        items: state.items, 
-        totalItems, 
-        itemCount, 
-        isEmpty 
+      console.log('🛒 useCart hook state:', {
+        items: state.items,
+        totalItems,
+        itemCount,
+        isEmpty,
       })
 
       return {

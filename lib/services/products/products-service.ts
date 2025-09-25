@@ -82,7 +82,9 @@ export class ProductsService {
   /**
    * Search products by query
    */
-  async searchProducts(params: ProductSearchParams): Promise<ProductSearchResponse> {
+  async searchProducts(
+    params: ProductSearchParams,
+  ): Promise<ProductSearchResponse> {
     const queryParams = new URLSearchParams()
 
     queryParams.set('q', params.q)

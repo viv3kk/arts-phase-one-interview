@@ -4,14 +4,14 @@
 
 This guide explains how to integrate React Query with data prefetching and hydration using Next.js App Router for seamless server-side rendering (SSR/ISR) and client-side caching. It assumes usage of a custom service layer for API calls, without Next.js API routes or Server Actions.
 
-***
+---
 
 ## Overview
 
 - **Goal:** Pre-fetch server data during ISR/SSR, serialize React Query cache, hydrate on the client to avoid duplicate requests and enable background refetching.
 - **Benefits:** Fast SEO-friendly first paint, consistent data across server and client, easy pagination, and smooth UI updates.
 
-***
+---
 
 ## Step 1: Wrap Your App with React Query Provider
 
@@ -24,11 +24,15 @@ Ensure the entire app is wrapped at the root with React Query’s provider to en
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [queryClient] = useState(() => new QueryClient())
 
   return (
-    <html lang="en">
+    <html lang='en'>
       <body>
         <QueryClientProvider client={queryClient}>
           {children}
@@ -40,8 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-
-***
+---
 
 ## Step 2: Create Your Service Layer Fetch Function
 
@@ -56,8 +59,7 @@ export async function fetchProducts(page: number) {
 }
 ```
 
-
-***
+---
 
 ## Step 3: Server-Side Prefetch + Hydration Boundary
 
@@ -65,7 +67,11 @@ In your ISR/SSR Server Component, prefetch data and dehydrate cache to pass to c
 
 ```tsx
 // app/products/page.tsx
-import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import {
+  QueryClient,
+  dehydrate,
+  HydrationBoundary,
+} from '@tanstack/react-query'
 import { fetchProducts } from '@/lib/services/products'
 
 export const revalidate = 3600 // Revalidate every hour (ISR)
@@ -84,8 +90,7 @@ export default async function ProductsPage() {
 }
 ```
 
-
-***
+---
 
 ## Step 4: Client Component with React Query Hook
 
@@ -108,7 +113,7 @@ export function ProductListClient({ page }: { page: number }) {
     {
       keepPreviousData: true,
       staleTime: 5 * 60 * 1000, // 5 minutes cache freshness
-    }
+    },
   )
 
   if (isLoading) return <div>Loading...</div>
@@ -116,7 +121,7 @@ export function ProductListClient({ page }: { page: number }) {
 
   return (
     <>
-      <div className="products-grid">
+      <div className='products-grid'>
         {data.products.map((product: any) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -133,8 +138,7 @@ export function ProductListClient({ page }: { page: number }) {
 }
 ```
 
-
-***
+---
 
 ## Optional Step 5: Handling Scroll Position and UI State
 
@@ -157,7 +161,7 @@ export const useUIStore = create<UIState>(set => ({
 
 Use saved state to restore scroll position on remount.
 
-***
+---
 
 ## Best Practices
 
@@ -169,20 +173,19 @@ Use saved state to restore scroll position on remount.
 - Optionally manage ephemeral UI state with Zustand.
 - Optimize cache freshness (`staleTime`) to balance performance and real-time needs.
 
-***
+---
 
 ## Summary
 
-| Step | Purpose |
-| :-- | :-- |
-| Wrap root with Provider | Provide React Query context |
-| Service layer fetch fn | Single source of truth for API calls |
-| Prefetch + Hydration | Avoid duplicate fetch, enable SSR/ISR |
-| Client-side `useQuery` | Hydrate cache, handle pagination |
-| Optional state management | Preserve UI/scroll/filter state |
+| Step                      | Purpose                               |
+| :------------------------ | :------------------------------------ |
+| Wrap root with Provider   | Provide React Query context           |
+| Service layer fetch fn    | Single source of truth for API calls  |
+| Prefetch + Hydration      | Avoid duplicate fetch, enable SSR/ISR |
+| Client-side `useQuery`    | Hydrate cache, handle pagination      |
+| Optional state management | Preserve UI/scroll/filter state       |
 
-
-***
+---
 
 This approach gives a solid, maintainable foundation for building performant, SEO-optimized, fully reactive Next.js apps using React Query hydration combined with ISR/SSR data prefetching—all while reusing your existing service layer.
 <span style="display:none">[^1][^2][^3][^4][^5][^6][^7][^8][^9]</span>
@@ -208,4 +211,3 @@ This approach gives a solid, maintainable foundation for building performant, SE
 [^8]: https://faun.pub/from-setup-to-execution-the-most-accurate-tanstack-query-and-next-js-14-integration-guide-8e5aff6ee8ba
 
 [^9]: https://www.youtube.com/watch?v=Z4L_UE0hVmo
-

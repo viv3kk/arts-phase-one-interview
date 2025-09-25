@@ -28,7 +28,11 @@ export default function PublicHeader({
   const { config } = useTenant()
 
   // Debug cart state
-  console.log('🛒 Header cart state:', { totalItems, itemsCount: items.length, items })
+  console.log('🛒 Header cart state:', {
+    totalItems,
+    itemsCount: items.length,
+    items,
+  })
 
   useEffect(() => {
     const onScroll = () => {
@@ -99,11 +103,11 @@ export default function PublicHeader({
             <Button variant='ghost' size='sm' className='relative'>
               <ShoppingCart className='h-4 w-4' />
               {totalItems > 0 && (
-                <Badge 
-                  variant='destructive' 
+                <Badge
+                  variant='destructive'
                   className={cn(
                     'absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs transition-all duration-300',
-                    cartBadgePulse && 'cart-badge-pulse bg-green-500'
+                    cartBadgePulse && 'cart-badge-pulse bg-green-500',
                   )}
                 >
                   {totalItems}

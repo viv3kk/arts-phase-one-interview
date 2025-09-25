@@ -4,11 +4,7 @@
  */
 'use client'
 
-import {
-  ActionCreator,
-  BaseSlice,
-  ComputedGetter,
-} from '@/lib/types/store.types'
+import { ActionCreator, BaseSlice } from '@/lib/types/store.types'
 import { StateCreator } from 'zustand'
 import { Product } from '@/lib/types/products.types'
 
@@ -80,21 +76,19 @@ export const initialCartState: Omit<
  * Create cart slice
  * Implements cart state management with persistence
  */
-export const createCartSlice: StateCreator<
-  CartState,
-  [],
-  [],
-  CartState
-> = (set, get) => ({
+export const createCartSlice: StateCreator<CartState, [], [], CartState> = (
+  set,
+  get,
+) => ({
   // Initialize with default state
   ...initialCartState,
 
   // Add item to cart
   addItem: (product: Product, quantity: number = 1) => {
     console.log('🛒 Adding item to cart:', { product: product.title, quantity })
-    set((state) => {
+    set(state => {
       const existingItem = state.items.find(item => item.id === product.id)
-      
+
       if (existingItem) {
         // Update quantity if item already exists
         console.log('🛒 Updating existing item quantity')
@@ -102,7 +96,7 @@ export const createCartSlice: StateCreator<
           items: state.items.map(item =>
             item.id === product.id
               ? { ...item, quantity: item.quantity + quantity }
-              : item
+              : item,
           ),
         }
       } else {
@@ -118,7 +112,7 @@ export const createCartSlice: StateCreator<
           brand: product.brand,
           category: product.category,
         }
-        
+
         return {
           items: [...state.items, newItem],
         }
@@ -128,7 +122,7 @@ export const createCartSlice: StateCreator<
 
   // Remove item from cart
   removeItem: (id: number) => {
-    set((state) => ({
+    set(state => ({
       items: state.items.filter(item => item.id !== id),
     }))
   },
@@ -140,9 +134,9 @@ export const createCartSlice: StateCreator<
       return
     }
 
-    set((state) => ({
+    set(state => ({
       items: state.items.map(item =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === id ? { ...item, quantity } : item,
       ),
     }))
   },
@@ -156,7 +150,7 @@ export const createCartSlice: StateCreator<
 
   // Toggle cart open/closed
   toggleCart: () => {
-    set((state) => ({
+    set(state => ({
       isOpen: !state.isOpen,
     }))
   },
@@ -202,10 +196,10 @@ export const createCartSlice: StateCreator<
       return 0
     }
     return state.items.reduce((total, item) => {
-      const itemPrice = item.discountPercentage 
-        ? item.price - (item.price * item.discountPercentage / 100)
+      const itemPrice = item.discountPercentage
+        ? item.price - (item.price * item.discountPercentage) / 100
         : item.price
-      return total + (itemPrice * item.quantity)
+      return total + itemPrice * item.quantity
     }, 0)
   },
 

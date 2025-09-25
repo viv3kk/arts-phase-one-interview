@@ -138,9 +138,9 @@ export interface ProductCategory {
   url: string
 }
 
-export interface ProductCategoriesResponse extends Array<ProductCategory> {}
+export type ProductCategoriesResponse = ProductCategory[]
 
-export interface ProductCategoryListResponse extends Array<string> {}
+export type ProductCategoryListResponse = string[]
 
 export interface ProductByCategoryResponse {
   products: Product[]
