@@ -1,15 +1,15 @@
 {
   "id": "abc-rental",
-  "name": "ABC Rental",
+  "name": "InstaShop",
   "theme": "fire",
   "content": {
     "hero": {
-      "headline": "ABC Rental - Premium Car Rentals",
+      "headline": "InstaShop - Premium Car Rentals",
       "description": "Experience the difference with our premium fleet and exceptional service. Drive luxury and performance."
     },
     "about": {
-      "title": "About ABC Rental",
-      "content": "ABC Rental has been providing premium car rental services since 2010. We specialize in high-end vehicles and personalized service, ensuring every journey is exceptional. Our commitment to excellence has made us the preferred choice for discerning travelers."
+      "title": "About InstaShop",
+      "content": "InstaShop has been providing premium car rental services since 2010. We specialize in high-end vehicles and personalized service, ensuring every journey is exceptional. Our commitment to excellence has made us the preferred choice for discerning travelers."
     },
     "contact": {
       "phone": "+1-555-0123",
@@ -18,12 +18,12 @@
     }
   },
   "metadata": {
-    "title": "ABC Rental - Premium Car Rentals",
-    "description": "Premium car rentals with luxury vehicles and exceptional service from ABC Rental.",
+    "title": "InstaShop - Premium Car Rentals",
+    "description": "Premium car rentals with luxury vehicles and exceptional service from InstaShop.",
     "seo": {
       "keywords": [
         "premium car rental",
-        "ABC rental",
+        "InstaShop rental",
         "luxury vehicles",
         "high-end car hire",
         "premium service"

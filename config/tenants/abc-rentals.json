@@ -1,14 +1,14 @@
 {
   "id": "abc-rentals",
-  "name": "ABC Car Rentals",
+  "name": "InstaShop",
   "theme": "fire",
   "content": {
     "hero": {
-      "headline": "Premium Car Rentals by ABC",
+      "headline": "Premium Car Rentals by InstaShop",
       "description": "Discover our fleet of quality vehicles for your next journey. Professional service since 2010."
     },
     "about": {
-      "title": "About ABC Rentals",
+      "title": "About InstaShop",
       "content": "We've been serving customers with reliable car rental services since 2010. Our commitment to quality and customer satisfaction has made us a trusted choice for both business and leisure travelers. We maintain a modern fleet of well-maintained vehicles to ensure your safety and comfort."
     },
     "contact": {
@@ -18,12 +18,12 @@
     }
   },
   "metadata": {
-    "title": "ABC Car Rentals - Premium Vehicle Rentals",
-    "description": "Rent quality vehicles from ABC Car Rentals. Professional service and competitive rates since 2010.",
+    "title": "InstaShop - Premium Vehicle Rentals",
+    "description": "Rent quality vehicles from InstaShop. Professional service and competitive rates since 2010.",
     "seo": {
       "keywords": [
         "car rental",
-        "ABC rentals",
+        "InstaShop rentals",
         "premium vehicles",
         "business car hire",
         "vehicle rental"

@@ -21,7 +21,7 @@ npm run dev
 #### Method 1: Query Parameter (Easiest for development)
 
 - Default tenant: http://localhost:3000
-- ABC Rentals: http://localhost:3000?tenant=abc-rentals
+- InstaShop: http://localhost:3000?tenant=abc-rentals
 - XYZ Cars: http://localhost:3000?tenant=xyz-cars
 
 #### Method 2: Subdomain (Production-like)
@@ -36,7 +36,7 @@ Add these entries to your `/etc/hosts` file:
 Then visit:
 
 - Default: http://localhost:3000
-- ABC Rentals: http://abc-rentals.localhost:3000
+- InstaShop: http://abc-rentals.localhost:3000
 - XYZ Cars: http://xyz-cars.localhost:3000
 
 ## Theme System (Tailwind v4)
@@ -97,7 +97,7 @@ Tenant configurations are stored in `config/tenants/`:
 
 - `config/tenants.json` - Registry of all tenants
 - `config/tenants/default.json` - Default fallback configuration
-- `config/tenants/abc-rentals.json` - ABC Rentals configuration
+- `config/tenants/abc-rentals.json` - InstaShop configuration
 - `config/tenants/xyz-cars.json` - XYZ Cars configuration
 
 ### Adding a New Tenant

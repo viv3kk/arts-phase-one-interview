@@ -58,7 +58,7 @@
 
 ## Available Testing URLs:
 
-- **ABC Car Rentals**: http://abc-rentals.localhost:3000
+- **InstaShop**: http://abc-rentals.localhost:3000
 - **XYZ Cars**: http://xyz-cars.localhost:3000
 - **Test Rental Co**: http://test-rental.localhost:3000
 - **Default**: http://localhost:3000
@@ -69,7 +69,7 @@
 # Development
 npm run dev              # Standard development server
 npm run dev:turbo        # Faster development with Turbo
-npm run dev:abc          # Test with ABC Rentals tenant
+npm run dev:abc          # Test with InstaShop tenant
 npm run dev:xyz          # Test with XYZ Cars tenant
 npm run dev:default      # Test with default tenant
 

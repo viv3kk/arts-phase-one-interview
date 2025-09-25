@@ -46,7 +46,7 @@ npm run validate
 
 ```bash
 # Start with specific tenant override (for testing)
-npm run dev:abc      # ABC Car Rentals
+npm run dev:abc      # InstaShop
 npm run dev:xyz      # XYZ Cars
 npm run dev:default  # Default tenant
 ```
@@ -67,7 +67,7 @@ npm run clean
 
 Test different tenants using these URLs in development:
 
-- **ABC Car Rentals**: http://abc-rentals.localhost:3000
+- **InstaShop**: http://abc-rentals.localhost:3000
 - **XYZ Cars**: http://xyz-cars.localhost:3000
 - **Test Rental Co**: http://test-rental.localhost:3000
 - **Default**: http://localhost:3000

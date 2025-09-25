@@ -1,0 +1,47 @@
+{
+  "id": "arts-shop",
+  "name": "InstaShop",
+  "theme": "fire",
+  "content": {
+    "hero": {
+      "headline": "InstaShop - Premium E-commerce",
+      "description": "Discover amazing products with exceptional quality and service. Shop with confidence and style."
+    },
+    "about": {
+      "title": "About InstaShop",
+      "content": "InstaShop is your premier destination for quality products and exceptional service. Since 2020, we've been committed to providing our customers with the best shopping experience, featuring curated products from trusted brands and reliable delivery to your doorstep."
+    },
+    "contact": {
+      "phone": "+1-555-INSTA",
+      "email": "hello@arts-shop.vercel.app",
+      "address": "123 Commerce Street, Digital City, DC 12345"
+    }
+  },
+  "metadata": {
+    "title": "InstaShop - Premium E-commerce Store",
+    "description": "Shop premium products with exceptional service from InstaShop. Quality products, fast delivery, and outstanding customer support.",
+    "seo": {
+      "keywords": [
+        "online shopping",
+        "premium products",
+        "InstaShop",
+        "quality e-commerce",
+        "fast delivery",
+        "customer service"
+      ],
+      "favicon": "/favicons/arts-shop.ico",
+      "openGraph": {
+        "image": "/images/arts-shop-og.jpg",
+        "type": "website",
+        "locale": "en_US"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "site": "@instashop",
+        "creator": "@instashop"
+      },
+      "canonicalBase": "https://arts-shop.vercel.app",
+      "robots": "index, follow"
+    }
+  }
+}

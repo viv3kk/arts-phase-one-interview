@@ -1,0 +1,47 @@
+{
+  "id": "arts-phase-one-interview",
+  "name": "Arts Phase One",
+  "theme": "ocean",
+  "content": {
+    "hero": {
+      "headline": "Arts Phase One - Creative Solutions",
+      "description": "Explore innovative products and creative solutions. Where art meets technology for a better tomorrow."
+    },
+    "about": {
+      "title": "About Arts Phase One",
+      "content": "Arts Phase One is a creative technology company focused on innovative solutions and artistic products. We combine cutting-edge technology with artistic vision to create products that inspire and delight our customers."
+    },
+    "contact": {
+      "phone": "+1-555-ARTS1",
+      "email": "hello@arts-phase-one-interview.vercel.app",
+      "address": "456 Innovation Drive, Creative City, CC 54321"
+    }
+  },
+  "metadata": {
+    "title": "Arts Phase One - Creative Technology Solutions",
+    "description": "Discover innovative products and creative solutions from Arts Phase One. Where technology meets artistry for exceptional experiences.",
+    "seo": {
+      "keywords": [
+        "creative technology",
+        "innovative products",
+        "Arts Phase One",
+        "artistic solutions",
+        "technology innovation",
+        "creative design"
+      ],
+      "favicon": "/favicons/arts-phase-one.ico",
+      "openGraph": {
+        "image": "/images/arts-phase-one-og.jpg",
+        "type": "website",
+        "locale": "en_US"
+      },
+      "twitter": {
+        "card": "summary_large_image",
+        "site": "@artsphaseone",
+        "creator": "@artsphaseone"
+      },
+      "canonicalBase": "https://arts-phase-one-interview.vercel.app",
+      "robots": "index, follow"
+    }
+  }
+}

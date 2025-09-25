@@ -154,7 +154,7 @@ config/
 ├── tenants.json               # 📋 Tenant registry & metadata
 └── tenants/                   # 🏢 Individual tenant configurations
     ├── default.json           # 🔄 Fallback configuration
-    ├── abc-rentals.json       # 🚗 ABC Car Rentals tenant
+    ├── abc-rentals.json       # 🚗 InstaShop tenant
     ├── xyz-cars.json          # 🚙 XYZ Cars tenant
     └── test-rental.json       # 🧪 Test tenant configuration
 ```
