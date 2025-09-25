@@ -25,11 +25,9 @@ export default async function HomePage() {
           </p>
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <Button asChild size='lg'>
-              <Link href='/products'>Shop Now</Link>
+              <Link href='/products'>View All Products</Link>
             </Button>
-            <Button variant='outline' asChild size='lg'>
-              <Link href='/about'>Learn More</Link>
-            </Button>
+            
           </div>
         </div>
       </section>
