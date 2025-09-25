@@ -11,10 +11,24 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useProduct } from '@/lib/services/hooks'
-import { Star, Heart, Share2, ShoppingCart, ArrowLeft } from 'lucide-react'
+import { useCart } from '@/lib/providers/StoreProvider'
+import { Star, Heart, Share2, ShoppingCart, ArrowLeft, Check, Loader2 } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
+
+// Client-side only date formatting to avoid hydration issues
+const ClientDate = ({ dateString }: { dateString: string }) => {
+  const [formattedDate, setFormattedDate] = useState<string>('')
+  
+  useEffect(() => {
+    const date = new Date(dateString)
+    setFormattedDate(date.toLocaleDateString())
+  }, [dateString])
+  
+  return <span>{formattedDate}</span>
+}
 
 interface ProductDetailClientProps {
   productId: number
@@ -22,8 +36,11 @@ interface ProductDetailClientProps {
 
 export function ProductDetailClient({ productId }: ProductDetailClientProps) {
   const { product, isLoading, error } = useProduct(productId)
+  const { addItem, items } = useCart()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [addToCartState, setAddToCartState] = useState<'idle' | 'adding' | 'success' | 'error'>('idle')
 
   if (isLoading) {
     return <ProductDetailSkeleton />
@@ -54,6 +71,63 @@ export function ProductDetailClient({ productId }: ProductDetailClientProps) {
 
   const discountPrice = product.price - (product.price * product.discountPercentage / 100)
   const isOnSale = product.discountPercentage > 0
+
+  const handleAddToCart = async () => {
+    if (!product || isAddingToCart) return
+
+    console.log('🛒 handleAddToCart called:', { product: product.title, quantity })
+    
+    try {
+      setIsAddingToCart(true)
+      setAddToCartState('adding')
+
+      // Check if item already exists in cart
+      const existingItem = items.find(item => item.id === product.id)
+      const isNewItem = !existingItem
+
+      // Add item to cart
+      addItem(product, quantity)
+
+      // Reset quantity to 1 after successful add
+      setQuantity(1)
+
+      // Show success state
+      setAddToCartState('success')
+
+      // Enhanced toast message
+      if (isNewItem) {
+        toast.success(`✅ Added ${quantity}x ${product.title} to cart!`, {
+          description: `Cart now has ${items.length + 1} items`,
+          duration: 3000,
+        })
+      } else {
+        toast.success(`✅ Updated ${product.title} in cart!`, {
+          description: `New quantity: ${existingItem.quantity + quantity}`,
+          duration: 3000,
+        })
+      }
+
+      // Reset button state after 2 seconds
+      setTimeout(() => {
+        setAddToCartState('idle')
+        setIsAddingToCart(false)
+      }, 2000)
+
+    } catch (error) {
+      console.error('🛒 Failed to add to cart:', error)
+      setAddToCartState('error')
+      toast.error('❌ Failed to add to cart. Please try again.', {
+        description: 'Something went wrong. Please refresh and try again.',
+        duration: 4000,
+      })
+
+      // Reset error state after 3 seconds
+      setTimeout(() => {
+        setAddToCartState('idle')
+        setIsAddingToCart(false)
+      }, 3000)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -187,7 +261,10 @@ export function ProductDetailClient({ productId }: ProductDetailClientProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    onClick={() => {
+                      console.log('🛒 Decreasing quantity:', quantity - 1)
+                      setQuantity(Math.max(1, quantity - 1))
+                    }}
                     disabled={quantity <= 1}
                   >
                     -
@@ -198,7 +275,10 @@ export function ProductDetailClient({ productId }: ProductDetailClientProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => {
+                      console.log('🛒 Increasing quantity:', quantity + 1)
+                      setQuantity(quantity + 1)
+                    }}
                     disabled={quantity >= product.stock}
                   >
                     +
@@ -210,11 +290,35 @@ export function ProductDetailClient({ productId }: ProductDetailClientProps) {
             <div className="flex gap-3">
               <Button 
                 size="lg" 
-                className="flex-1"
-                disabled={product.stock === 0}
+                className="flex-1 transition-all duration-200"
+                disabled={product.stock === 0 || isAddingToCart}
+                onClick={handleAddToCart}
+                variant={addToCartState === 'success' ? 'default' : addToCartState === 'error' ? 'destructive' : 'default'}
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart
+                {addToCartState === 'adding' && (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                )}
+                {addToCartState === 'success' && (
+                  <>
+                    <Check className="h-5 w-5 mr-2" />
+                    Added to Cart!
+                  </>
+                )}
+                {addToCartState === 'error' && (
+                  <>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Try Again
+                  </>
+                )}
+                {addToCartState === 'idle' && (
+                  <>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Add to Cart
+                  </>
+                )}
               </Button>
               <Button variant="outline" size="lg">
                 <Heart className="h-5 w-5" />
@@ -302,7 +406,7 @@ export function ProductDetailClient({ productId }: ProductDetailClientProps) {
                     </div>
                     <span className="text-sm font-medium">{review.reviewerName}</span>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(review.date).toLocaleDateString()}
+                      <ClientDate dateString={review.date} />
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground">{review.comment}</p>

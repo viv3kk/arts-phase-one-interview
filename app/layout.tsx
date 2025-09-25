@@ -1,5 +1,6 @@
 import { TenantProvider } from '@/components/providers/TenantProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { Toaster } from '@/components/ui/sonner'
 import { getAllFontVariables } from '@/lib/fonts'
 import { Providers } from '@/lib/providers/Providers'
 import { getTenantConfig } from '@/lib/tenant'
@@ -113,6 +114,9 @@ export default async function RootLayout({
 
         {/* Portal container for modals */}
         <div id='modal-root' />
+        
+        {/* Toast notifications */}
+        <Toaster />
       </body>
     </html>
   )

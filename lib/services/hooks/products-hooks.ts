@@ -6,7 +6,7 @@
  */
 'use client'
 
-import { useAuth } from '@/lib/providers/StoreProvider'
+// Removed useAuth - cart-only app
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useEffect, useMemo, useState } from 'react'
 import {
@@ -42,8 +42,6 @@ export const productsKeys = {
  * Provides basic query functionality with React Query
  */
 export function useProducts(params?: ProductQueryParams) {
-  const { setError } = useAuth()
-
   const query = useQuery({
     queryKey: productsKeys.list(params || {}),
     queryFn: () => productsService.getProducts(params),
@@ -53,7 +51,7 @@ export function useProducts(params?: ProductQueryParams) {
 
   // Handle errors
   if (query.error) {
-    setError((query.error as Error).message)
+    console.error('Products query error:', query.error)
   }
 
   return {
@@ -71,8 +69,6 @@ export function useProducts(params?: ProductQueryParams) {
  * Get single product query hook
  */
 export function useProduct(id: number) {
-  const { setError } = useAuth()
-
   const query = useQuery({
     queryKey: productsKeys.detail(id),
     queryFn: () => productsService.getProduct(id),
@@ -83,7 +79,7 @@ export function useProduct(id: number) {
 
   // Handle errors
   if (query.error) {
-    setError((query.error as Error).message)
+    console.error('Product query error:', query.error)
   }
 
   return {
@@ -98,7 +94,7 @@ export function useProduct(id: number) {
  * Search products query hook
  */
 export function useProductSearch(params: ProductSearchParams) {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
 
   const query = useQuery({
     queryKey: productsKeys.search(params),
@@ -110,7 +106,7 @@ export function useProductSearch(params: ProductSearchParams) {
 
   // Handle errors
   if (query.error) {
-    setError((query.error as Error).message)
+    console.error('Query error:', query.error)
   }
 
   return {
@@ -128,7 +124,7 @@ export function useProductSearch(params: ProductSearchParams) {
  * Get product categories query hook
  */
 export function useProductCategories() {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
 
   const query = useQuery({
     queryKey: productsKeys.categories(),
@@ -139,7 +135,7 @@ export function useProductCategories() {
 
   // Handle errors
   if (query.error) {
-    setError((query.error as Error).message)
+    console.error('Query error:', query.error)
   }
 
   return {
@@ -154,7 +150,7 @@ export function useProductCategories() {
  * Get product category list query hook
  */
 export function useProductCategoryList() {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
 
   const query = useQuery({
     queryKey: productsKeys.categoryList(),
@@ -165,7 +161,7 @@ export function useProductCategoryList() {
 
   // Handle errors
   if (query.error) {
-    setError((query.error as Error).message)
+    console.error('Query error:', query.error)
   }
 
   return {
@@ -183,7 +179,7 @@ export function useProductsByCategory(
   category: string,
   params?: Omit<ProductQueryParams, 'category'>,
 ) {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
 
   const query = useQuery({
     queryKey: productsKeys.byCategory(category, params),
@@ -195,7 +191,7 @@ export function useProductsByCategory(
 
   // Handle errors
   if (query.error) {
-    setError((query.error as Error).message)
+    console.error('Query error:', query.error)
   }
 
   return {
@@ -213,12 +209,11 @@ export function useProductsByCategory(
  * Create product mutation hook
  */
 export function useCreateProduct() {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: (data: CreateProductRequest) => {
-      setError(null) // Clear errors before starting
       return productsService.createProduct(data)
     },
     onSuccess: response => {
@@ -227,7 +222,6 @@ export function useCreateProduct() {
       console.log('Product created successfully:', response)
     },
     onError: (error: Error) => {
-      setError(error.message)
       console.error('Failed to create product:', error.message)
     },
   })
@@ -245,12 +239,11 @@ export function useCreateProduct() {
  * Update product mutation hook
  */
 export function useUpdateProduct() {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateProductRequest }) => {
-      setError(null)
       return productsService.updateProduct(id, data)
     },
     onSuccess: (response, variables) => {
@@ -261,7 +254,6 @@ export function useUpdateProduct() {
       console.log('Product updated successfully:', response)
     },
     onError: (error: Error) => {
-      setError(error.message)
       console.error('Failed to update product:', error.message)
     },
   })
@@ -279,12 +271,11 @@ export function useUpdateProduct() {
  * Delete product mutation hook
  */
 export function useDeleteProduct() {
-  const { setError } = useAuth()
+  // Removed useAuth - cart-only app
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: (id: number) => {
-      setError(null)
       return productsService.deleteProduct(id)
     },
     onSuccess: (_, id) => {
@@ -295,7 +286,6 @@ export function useDeleteProduct() {
       console.log('Product deleted successfully:', id)
     },
     onError: (error: Error) => {
-      setError(error.message)
       console.error('Failed to delete product:', error.message)
     },
   })
