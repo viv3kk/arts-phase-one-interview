@@ -27,6 +27,7 @@
     "fix": "npm run format && npm run lint:fix",
     "fix:all": "npm run format && npm run lint:fix && npm run type-check",
     "test:config": "node scripts/test-tenant-configs.js",
+    "test:pricing": "node scripts/test-pricing-calculations.js",
     "generate:types": "node scripts/generate-api-types.js",
     "test": "jest",
     "test:watch": "jest --watch",

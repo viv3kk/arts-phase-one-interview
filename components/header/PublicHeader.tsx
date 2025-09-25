@@ -92,8 +92,8 @@ export default function PublicHeader({
           </span>
         </Link>
 
-        {/* Navigation Section */}
-        <nav className='hidden md:flex items-center gap-4 flex-1 ml-6'>
+        {/* Navigation Section - Aligned to the right */}
+        <nav className='hidden md:flex items-center gap-4 ml-auto'>
           <Link href='/products'>
             <Button variant='ghost' size='sm'>
               Products
@@ -101,6 +101,7 @@ export default function PublicHeader({
           </Link>
           <Link href='/cart'>
             <Button variant='ghost' size='sm' className='relative'>
+              Cart
               <ShoppingCart className='h-4 w-4' />
               {totalItems > 0 && (
                 <Badge

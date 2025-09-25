@@ -27,7 +27,6 @@ Component composition is a design pattern that focuses on building complex UIs b
 - **Declarative Structure**: JSX defines the component structure, not props
 - **Provider Pattern**: Lift state up using Context for shared functionality
 
-
 ### Benefits
 
 - Eliminates "boolean prop hell"
@@ -35,7 +34,6 @@ Component composition is a design pattern that focuses on building complex UIs b
 - Improves reusability and testability
 - Makes code more readable and maintainable
 - Enables better separation of concerns
-
 
 ## The Problem: Configuration Hell
 
@@ -46,12 +44,12 @@ Many React applications suffer from components that accumulate boolean configura
 ```tsx
 // ❌ Bad: Configuration-driven component
 interface UserFormProps {
-  isEditing?: boolean;
-  hideWelcomeMessage?: boolean;
-  isSlugRequired?: boolean;
-  showAdvancedOptions?: boolean;
-  isAdminMode?: boolean;
-  disableSubmit?: boolean;
+  isEditing?: boolean
+  hideWelcomeMessage?: boolean
+  isSlugRequired?: boolean
+  showAdvancedOptions?: boolean
+  isAdminMode?: boolean
+  disableSubmit?: boolean
   // ... dozens more boolean props
 }
 
@@ -61,23 +59,23 @@ function UserForm({
   isSlugRequired,
   showAdvancedOptions,
   isAdminMode,
-  disableSubmit
+  disableSubmit,
 }: UserFormProps) {
   return (
     <form>
       {!hideWelcomeMessage && <WelcomeMessage />}
-      
-      <input name="name" />
-      
-      {isSlugRequired && <input name="slug" />}
-      
+
+      <input name='name' />
+
+      {isSlugRequired && <input name='slug' />}
+
       {showAdvancedOptions && (
         <div>
-          <input name="role" />
-          {isAdminMode && <input name="permissions" />}
+          <input name='role' />
+          {isAdminMode && <input name='permissions' />}
         </div>
       )}
-      
+
       <button disabled={disableSubmit}>
         {isEditing ? 'Update' : 'Create'}
       </button>
@@ -85,7 +83,6 @@ function UserForm({
   )
 }
 ```
-
 
 ### Problems with This Approach
 
@@ -131,14 +128,12 @@ function EditUserForm() {
 }
 ```
 
-
 ### Benefits of This Approach
 
 - **Clear Intent**: Each form variant has explicit structure
 - **No Conditional Logic**: No complex if/else statements
 - **Easy Testing**: Test each variant independently
 - **Flexible**: Easy to create new variants by composition
-
 
 ## Implementation Patterns
 
@@ -150,7 +145,7 @@ Build components that work together as a cohesive unit:
 // Modal compound component
 function Modal({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
-  
+
   return (
     <ModalContext.Provider value={{ isOpen, setIsOpen }}>
       {children}
@@ -158,40 +153,52 @@ function Modal({ children }: { children: React.ReactNode }) {
   )
 }
 
-Modal.Trigger = function ModalTrigger({ children }: { children: React.ReactNode }) {
+Modal.Trigger = function ModalTrigger({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { setIsOpen } = useModalContext()
-  
-  return (
-    <button onClick={() => setIsOpen(true)}>
-      {children}
-    </button>
-  )
+
+  return <button onClick={() => setIsOpen(true)}>{children}</button>
 }
 
-Modal.Content = function ModalContent({ children }: { children: React.ReactNode }) {
+Modal.Content = function ModalContent({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { isOpen, setIsOpen } = useModalContext()
-  
+
   if (!isOpen) return null
-  
+
   return (
-    <div className="modal-overlay" onClick={() => setIsOpen(false)}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+    <div className='modal-overlay' onClick={() => setIsOpen(false)}>
+      <div className='modal-content' onClick={e => e.stopPropagation()}>
         {children}
       </div>
     </div>
   )
 }
 
-Modal.Header = function ModalHeader({ children }: { children: React.ReactNode }) {
-  return <div className="modal-header">{children}</div>
+Modal.Header = function ModalHeader({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <div className='modal-header'>{children}</div>
 }
 
 Modal.Body = function ModalBody({ children }: { children: React.ReactNode }) {
-  return <div className="modal-body">{children}</div>
+  return <div className='modal-body'>{children}</div>
 }
 
-Modal.Footer = function ModalFooter({ children }: { children: React.ReactNode }) {
-  return <div className="modal-footer">{children}</div>
+Modal.Footer = function ModalFooter({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <div className='modal-footer'>{children}</div>
 }
 
 // Usage
@@ -215,7 +222,6 @@ function UserProfile() {
   )
 }
 ```
-
 
 ### 2. Render Props Pattern
 
@@ -261,13 +267,15 @@ function DataFetcher<T>({ url, children }: DataFetcherProps<T>) {
 // Usage
 function UserList() {
   return (
-    <DataFetcher<User[]> url="/api/users">
+    <DataFetcher<User[]> url='/api/users'>
       {({ data, loading, error, refetch }) => {
         if (loading) return <LoadingSpinner />
         if (error) return <ErrorMessage error={error} onRetry={refetch} />
         return (
           <div>
-            {data?.map(user => <UserCard key={user.id} user={user} />)}
+            {data?.map(user => (
+              <UserCard key={user.id} user={user} />
+            ))}
           </div>
         )
       }}
@@ -276,24 +284,21 @@ function UserList() {
 }
 ```
 
-
 ### 3. Higher-Order Components (HOCs)
 
 Wrap components to add shared functionality:
 
 ```tsx
-function withAuth<P extends object>(
-  Component: React.ComponentType<P>
-) {
+function withAuth<P extends object>(Component: React.ComponentType<P>) {
   return function AuthenticatedComponent(props: P) {
     const { user, loading } = useAuth()
-    
+
     if (loading) return <LoadingSpinner />
-    
+
     if (!user) {
-      return <Navigate to="/login" replace />
+      return <Navigate to='/login' replace />
     }
-    
+
     return <Component {...props} />
   }
 }
@@ -303,7 +308,6 @@ const ProtectedDashboard = withAuth(Dashboard)
 const ProtectedSettings = withAuth(Settings)
 ```
 
-
 ### 4. Custom Hooks for Logic Composition
 
 Extract and share stateful logic across components:
@@ -311,11 +315,11 @@ Extract and share stateful logic across components:
 ```tsx
 function useToggle(initialState = false) {
   const [state, setState] = useState(initialState)
-  
+
   const toggle = useCallback(() => setState(prev => !prev), [])
   const setTrue = useCallback(() => setState(true), [])
   const setFalse = useCallback(() => setState(false), [])
-  
+
   return { state, toggle, setTrue, setFalse }
 }
 
@@ -328,16 +332,19 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       return initialValue
     }
   })
-  
-  const setStoredValue = useCallback((newValue: T) => {
-    try {
-      setValue(newValue)
-      localStorage.setItem(key, JSON.stringify(newValue))
-    } catch (error) {
-      console.error(`Error saving to localStorage:`, error)
-    }
-  }, [key])
-  
+
+  const setStoredValue = useCallback(
+    (newValue: T) => {
+      try {
+        setValue(newValue)
+        localStorage.setItem(key, JSON.stringify(newValue))
+      } catch (error) {
+        console.error(`Error saving to localStorage:`, error)
+      }
+    },
+    [key],
+  )
+
   return [value, setStoredValue] as const
 }
 
@@ -345,21 +352,18 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 function Settings() {
   const { state: isOpen, toggle } = useToggle()
   const [theme, setTheme] = useLocalStorage('theme', 'light')
-  
+
   return (
     <div>
       <button onClick={toggle}>
         {isOpen ? 'Hide' : 'Show'} Advanced Settings
       </button>
-      
-      {isOpen && (
-        <ThemeSelector value={theme} onChange={setTheme} />
-      )}
+
+      {isOpen && <ThemeSelector value={theme} onChange={setTheme} />}
     </div>
   )
 }
 ```
-
 
 ## State Management with Composition
 
@@ -394,15 +398,15 @@ function ComposerProvider({ children }: { children: React.ReactNode }) {
   const [content, setContent] = useState('')
   const [attachments, setAttachments] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   const addAttachment = useCallback((file: File) => {
     setAttachments(prev => [...prev, file])
   }, [])
-  
+
   const removeAttachment = useCallback((index: number) => {
     setAttachments(prev => prev.filter((_, i) => i !== index))
   }, [])
-  
+
   const submit = useCallback(async () => {
     setIsSubmitting(true)
     try {
@@ -413,7 +417,7 @@ function ComposerProvider({ children }: { children: React.ReactNode }) {
       setIsSubmitting(false)
     }
   }, [content, attachments])
-  
+
   const value: ComposerState = {
     content,
     setContent,
@@ -421,9 +425,9 @@ function ComposerProvider({ children }: { children: React.ReactNode }) {
     addAttachment,
     removeAttachment,
     submit,
-    isSubmitting
+    isSubmitting,
   }
-  
+
   return (
     <ComposerContext.Provider value={value}>
       {children}
@@ -434,19 +438,19 @@ function ComposerProvider({ children }: { children: React.ReactNode }) {
 // Component implementations
 function TextInput() {
   const { content, setContent } = useComposer()
-  
+
   return (
     <textarea
       value={content}
       onChange={e => setContent(e.target.value)}
-      placeholder="Type your message..."
+      placeholder='Type your message...'
     />
   )
 }
 
 function AttachmentZone() {
   const { addAttachment } = useComposer()
-  
+
   return (
     <div
       onDrop={e => {
@@ -463,12 +467,9 @@ function AttachmentZone() {
 
 function SubmitButton() {
   const { submit, isSubmitting, content } = useComposer()
-  
+
   return (
-    <button 
-      onClick={submit} 
-      disabled={isSubmitting || !content.trim()}
-    >
+    <button onClick={submit} disabled={isSubmitting || !content.trim()}>
       {isSubmitting ? 'Sending...' : 'Send'}
     </button>
   )
@@ -478,10 +479,10 @@ function SubmitButton() {
 function StandardComposer() {
   return (
     <ComposerProvider>
-      <div className="composer">
+      <div className='composer'>
         <TextInput />
         <AttachmentZone />
-        <div className="actions">
+        <div className='actions'>
           <SubmitButton />
         </div>
       </div>
@@ -492,7 +493,7 @@ function StandardComposer() {
 function QuickReplyComposer() {
   return (
     <ComposerProvider>
-      <div className="quick-composer">
+      <div className='quick-composer'>
         <TextInput />
         <SubmitButton />
       </div>
@@ -501,21 +502,28 @@ function QuickReplyComposer() {
 }
 ```
 
-
 ### Different State Implementations
 
 The same interface can support different state management strategies:
 
 ```tsx
 // Ephemeral state for modal
-function EphemeralComposerProvider({ children }: { children: React.ReactNode }) {
+function EphemeralComposerProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   // Uses regular useState - state is lost when component unmounts
   const [content, setContent] = useState('')
   // ... rest of implementation
 }
 
 // Persistent state for main composer
-function PersistentComposerProvider({ children }: { children: React.ReactNode }) {
+function PersistentComposerProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   // Uses custom hook that syncs with server
   const [content, setContent] = useGlobalMessageDraft()
   // ... rest of implementation
@@ -539,7 +547,6 @@ function ChannelComposer() {
 }
 ```
 
-
 ## Advanced Composition Techniques
 
 ### 1. Slot Pattern
@@ -556,30 +563,16 @@ interface LayoutProps {
 
 function Layout({ children, header, sidebar, footer }: LayoutProps) {
   return (
-    <div className="layout">
-      {header && (
-        <header className="layout-header">
-          {header}
-        </header>
-      )}
-      
-      <div className="layout-body">
-        {sidebar && (
-          <aside className="layout-sidebar">
-            {sidebar}
-          </aside>
-        )}
-        
-        <main className="layout-main">
-          {children}
-        </main>
+    <div className='layout'>
+      {header && <header className='layout-header'>{header}</header>}
+
+      <div className='layout-body'>
+        {sidebar && <aside className='layout-sidebar'>{sidebar}</aside>}
+
+        <main className='layout-main'>{children}</main>
       </div>
-      
-      {footer && (
-        <footer className="layout-footer">
-          {footer}
-        </footer>
-      )}
+
+      {footer && <footer className='layout-footer'>{footer}</footer>}
     </div>
   )
 }
@@ -608,7 +601,6 @@ function LandingPage() {
 }
 ```
 
-
 ### 2. Polymorphic Components
 
 Create components that can render as different elements:
@@ -621,18 +613,14 @@ interface PolymorphicProps<T extends As> {
   children: React.ReactNode
 }
 
-type Props<T extends As> = PolymorphicProps<T> & 
+type Props<T extends As> = PolymorphicProps<T> &
   Omit<JSX.IntrinsicElements[T], keyof PolymorphicProps<T>>
 
-function Button<T extends As = 'button'>({
-  as,
-  children,
-  ...props
-}: Props<T>) {
+function Button<T extends As = 'button'>({ as, children, ...props }: Props<T>) {
   const Component = as || 'button'
-  
+
   return (
-    <Component className="btn" {...props}>
+    <Component className='btn' {...props}>
       {children}
     </Component>
   )
@@ -642,23 +630,27 @@ function Button<T extends As = 'button'>({
 function Navigation() {
   return (
     <nav>
-      <Button as="a" href="/home">Home</Button>
-      <Button as="a" href="/about">About</Button>
-      <Button onClick={() => console.log('clicked')}>
-        Action
+      <Button as='a' href='/home'>
+        Home
       </Button>
+      <Button as='a' href='/about'>
+        About
+      </Button>
+      <Button onClick={() => console.log('clicked')}>Action</Button>
     </nav>
   )
 }
 ```
-
 
 ### 3. Render Prop Composition
 
 Combine multiple render prop components:
 
 ```tsx
-function DataWithAuth<T>({ children, ...dataProps }: {
+function DataWithAuth<T>({
+  children,
+  ...dataProps
+}: {
   children: (authData: AuthData, fetchData: FetchData<T>) => React.ReactNode
 } & Omit<DataFetcherProps<T>, 'children'>) {
   return (
@@ -675,18 +667,17 @@ function DataWithAuth<T>({ children, ...dataProps }: {
 // Usage
 function UserProfile() {
   return (
-    <DataWithAuth<User> url="/api/user/profile">
+    <DataWithAuth<User> url='/api/user/profile'>
       {({ user }, { data: profile, loading }) => {
         if (!user) return <LoginPrompt />
         if (loading) return <LoadingSpinner />
-        
+
         return <ProfileDisplay profile={profile} />
       }}
     </DataWithAuth>
   )
 }
 ```
-
 
 ## Real-World Examples
 
@@ -708,35 +699,41 @@ const FormContext = createContext<{
 } | null>(null)
 
 // Form components
-function Form({ children, onSubmit }: {
+function Form({
+  children,
+  onSubmit,
+}: {
   children: React.ReactNode
   onSubmit: (values: Record<string, any>) => Promise<void>
 }) {
   const [values, setValues] = useState({})
   const [errors, setErrors] = useState({})
   const [touched, setTouched] = useState({})
-  
+
   // Implementation details...
-  
+
   return (
     <FormContext.Provider value={contextValue}>
-      <form onSubmit={handleSubmit}>
-        {children}
-      </form>
+      <form onSubmit={handleSubmit}>{children}</form>
     </FormContext.Provider>
   )
 }
 
-function Field({ name, label, type = 'text', required }: {
+function Field({
+  name,
+  label,
+  type = 'text',
+  required,
+}: {
   name: string
   label: string
   type?: string
   required?: boolean
 }) {
   const form = useContext(FormContext)!
-  
+
   return (
-    <div className="field">
+    <div className='field'>
       <label htmlFor={name}>
         {label} {required && '*'}
       </label>
@@ -749,7 +746,7 @@ function Field({ name, label, type = 'text', required }: {
         className={form.errors[name] ? 'error' : ''}
       />
       {form.touched[name] && form.errors[name] && (
-        <span className="error-message">{form.errors[name]}</span>
+        <span className='error-message'>{form.errors[name]}</span>
       )}
     </div>
   )
@@ -759,11 +756,11 @@ function Field({ name, label, type = 'text', required }: {
 function CreateUserForm() {
   return (
     <Form onSubmit={createUser}>
-      <Field name="firstName" label="First Name" required />
-      <Field name="lastName" label="Last Name" required />
-      <Field name="email" label="Email" type="email" required />
-      <Field name="password" label="Password" type="password" required />
-      <button type="submit">Create User</button>
+      <Field name='firstName' label='First Name' required />
+      <Field name='lastName' label='Last Name' required />
+      <Field name='email' label='Email' type='email' required />
+      <Field name='password' label='Password' type='password' required />
+      <button type='submit'>Create User</button>
     </Form>
   )
 }
@@ -772,34 +769,38 @@ function CreateUserForm() {
 function LoginForm() {
   return (
     <Form onSubmit={login}>
-      <Field name="email" label="Email" type="email" required />
-      <Field name="password" label="Password" type="password" required />
-      <button type="submit">Sign In</button>
+      <Field name='email' label='Email' type='email' required />
+      <Field name='password' label='Password' type='password' required />
+      <button type='submit'>Sign In</button>
     </Form>
   )
 }
 ```
-
 
 ### 2. Data Table Composition
 
 Build flexible data tables:
 
 ```tsx
-function DataTable<T>({ children, data }: {
+function DataTable<T>({
+  children,
+  data,
+}: {
   children: React.ReactNode
   data: T[]
 }) {
   return (
     <DataTableProvider data={data}>
-      <table className="data-table">
-        {children}
-      </table>
+      <table className='data-table'>{children}</table>
     </DataTableProvider>
   )
 }
 
-DataTable.Header = function TableHeader({ children }: { children: React.ReactNode }) {
+DataTable.Header = function TableHeader({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <thead>
       <tr>{children}</tr>
@@ -807,27 +808,34 @@ DataTable.Header = function TableHeader({ children }: { children: React.ReactNod
   )
 }
 
-DataTable.Column = function TableColumn<T>({ 
-  title, 
+DataTable.Column = function TableColumn<T>({
+  title,
   dataKey,
-  render 
-}: { 
+  render,
+}: {
   title: string
   dataKey?: keyof T
-  render?: (item: T) => React.ReactNode 
+  render?: (item: T) => React.ReactNode
 }) {
   return <th>{title}</th>
 }
 
-DataTable.Body = function TableBody<T>({ children }: { children: React.ReactNode }) {
+DataTable.Body = function TableBody<T>({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { data } = useDataTable<T>()
-  
+
   return (
     <tbody>
       {data.map((item, index) => (
         <tr key={index}>
           {React.Children.map(children, child => {
-            if (React.isValidElement(child) && child.type === DataTable.Column) {
+            if (
+              React.isValidElement(child) &&
+              child.type === DataTable.Column
+            ) {
               const { dataKey, render } = child.props
               return (
                 <td>
@@ -848,34 +856,43 @@ function UserTable() {
   return (
     <DataTable data={users}>
       <DataTable.Header>
-        <DataTable.Column title="Name" />
-        <DataTable.Column title="Email" />
-        <DataTable.Column title="Status" />
-        <DataTable.Column title="Actions" />
+        <DataTable.Column title='Name' />
+        <DataTable.Column title='Email' />
+        <DataTable.Column title='Status' />
+        <DataTable.Column title='Actions' />
       </DataTable.Header>
-      
+
       <DataTable.Body>
-        <DataTable.Column dataKey="name" />
-        <DataTable.Column dataKey="email" />
-        <DataTable.Column render={user => (
-          <Badge variant={user.isActive ? 'success' : 'danger'}>
-            {user.isActive ? 'Active' : 'Inactive'}
-          </Badge>
-        )} />
-        <DataTable.Column render={user => (
-          <div>
-            <Button size="sm" onClick={() => editUser(user)}>Edit</Button>
-            <Button size="sm" variant="danger" onClick={() => deleteUser(user)}>
-              Delete
-            </Button>
-          </div>
-        )} />
+        <DataTable.Column dataKey='name' />
+        <DataTable.Column dataKey='email' />
+        <DataTable.Column
+          render={user => (
+            <Badge variant={user.isActive ? 'success' : 'danger'}>
+              {user.isActive ? 'Active' : 'Inactive'}
+            </Badge>
+          )}
+        />
+        <DataTable.Column
+          render={user => (
+            <div>
+              <Button size='sm' onClick={() => editUser(user)}>
+                Edit
+              </Button>
+              <Button
+                size='sm'
+                variant='danger'
+                onClick={() => deleteUser(user)}
+              >
+                Delete
+              </Button>
+            </div>
+          )}
+        />
       </DataTable.Body>
     </DataTable>
   )
 }
 ```
-
 
 ## Best Practices
 
@@ -886,22 +903,21 @@ Design components from the ground up with composition:
 ```tsx
 // ✅ Good: Designed for composition
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="card">{children}</div>
+  return <div className='card'>{children}</div>
 }
 
 Card.Header = function CardHeader({ children }: { children: React.ReactNode }) {
-  return <div className="card-header">{children}</div>
+  return <div className='card-header'>{children}</div>
 }
 
 Card.Body = function CardBody({ children }: { children: React.ReactNode }) {
-  return <div className="card-body">{children}</div>
+  return <div className='card-body'>{children}</div>
 }
 
 Card.Footer = function CardFooter({ children }: { children: React.ReactNode }) {
-  return <div className="card-footer">{children}</div>
+  return <div className='card-footer'>{children}</div>
 }
 ```
-
 
 ### 2. Use TypeScript for Better Composition
 
@@ -920,15 +936,15 @@ interface ButtonProps extends BaseProps {
   onClick?: () => void
 }
 
-function Button({ 
-  children, 
-  variant = 'primary', 
+function Button({
+  children,
+  variant = 'primary',
   size = 'md',
   className = '',
-  ...props 
+  ...props
 }: ButtonProps) {
   const classes = `btn btn-${variant} btn-${size} ${className}`.trim()
-  
+
   return (
     <button className={classes} {...props}>
       {children}
@@ -937,18 +953,20 @@ function Button({
 }
 ```
 
-
 ### 3. Provide Escape Hatches
 
 Always provide ways to escape abstraction when needed:
 
 ```tsx
-function ActionBar({ children, showDefaults = true }: {
+function ActionBar({
+  children,
+  showDefaults = true,
+}: {
   children?: React.ReactNode
   showDefaults?: boolean
 }) {
   return (
-    <div className="action-bar">
+    <div className='action-bar'>
       {showDefaults && <DefaultActions />}
       {children}
     </div>
@@ -979,7 +997,6 @@ function CustomComposer() {
 }
 ```
 
-
 ### 4. Test Composition Boundaries
 
 Test components in isolation and composition:
@@ -990,27 +1007,26 @@ describe('Card Component', () => {
     render(
       <Card>
         <Card.Body>Content</Card.Body>
-      </Card>
+      </Card>,
     )
     expect(screen.getByText('Content')).toBeInTheDocument()
   })
-  
+
   it('renders full card composition', () => {
     render(
       <Card>
         <Card.Header>Title</Card.Header>
         <Card.Body>Content</Card.Body>
         <Card.Footer>Footer</Card.Footer>
-      </Card>
+      </Card>,
     )
-    
+
     expect(screen.getByText('Title')).toBeInTheDocument()
     expect(screen.getByText('Content')).toBeInTheDocument()
     expect(screen.getByText('Footer')).toBeInTheDocument()
   })
 })
 ```
-
 
 ## Common Pitfalls
 
@@ -1020,26 +1036,20 @@ Don't create abstractions before you need them:
 
 ```tsx
 // ❌ Bad: Premature abstraction
-function GenericWidget({
-  type,
-  data,
-  config,
-  handlers
-}: GenericWidgetProps) {
+function GenericWidget({ type, data, config, handlers }: GenericWidgetProps) {
   // Complex logic to handle all possible widget types
 }
 
 // ✅ Good: Start specific, abstract when patterns emerge
 function UserWidget({ user }: { user: User }) {
   return (
-    <div className="user-widget">
+    <div className='user-widget'>
       <Avatar src={user.avatar} />
       <span>{user.name}</span>
     </div>
   )
 }
 ```
-
 
 ### 2. Deep Nesting of Providers
 
@@ -1068,9 +1078,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <RouterProvider>
-          {children}
-        </RouterProvider>
+        <RouterProvider>{children}</RouterProvider>
       </AuthProvider>
     </ThemeProvider>
   )
@@ -1085,22 +1093,21 @@ function App() {
 }
 ```
 
-
 ### 3. Ignoring Performance
 
 Be mindful of re-renders in composed components:
 
 ```tsx
 // ✅ Good: Memoize expensive operations
-const ExpensiveComponent = memo(function ExpensiveComponent({ 
-  data 
-}: { 
-  data: ComplexData 
+const ExpensiveComponent = memo(function ExpensiveComponent({
+  data,
+}: {
+  data: ComplexData
 }) {
   const processedData = useMemo(() => {
     return expensiveOperation(data)
   }, [data])
-  
+
   return <div>{processedData}</div>
 })
 
@@ -1108,7 +1115,6 @@ const ExpensiveComponent = memo(function ExpensiveComponent({
 const UIContext = createContext(uiState)
 const DataContext = createContext(dataState)
 ```
-
 
 ## Summary
 
@@ -1124,4 +1130,3 @@ Component composition is a powerful pattern that leads to more maintainable, tes
 6. **Start specific and abstract only when patterns emerge**
 
 By following these principles and patterns, you'll build React applications that scale gracefully and remain maintainable as they grow in complexity.
-

@@ -34,6 +34,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 ### ✅ **Implemented Features**
 
 #### **🛍️ Product Catalog**
+
 - ✅ **Product Listing**: Grid and list view modes
 - ✅ **Search Functionality**: Real-time product search with debouncing
 - ✅ **Pagination**: Navigate through product pages
@@ -42,6 +43,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ✅ **Error Handling**: Graceful error states and fallbacks
 
 #### **📱 Product Details**
+
 - ✅ **Product Information**: Title, price, description, specifications
 - ✅ **Image Gallery**: Main image with thumbnail navigation
 - ✅ **Stock Status**: Real-time stock availability
@@ -50,6 +52,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ✅ **Warranty & Shipping**: Additional product information
 
 #### **🛒 Shopping Cart**
+
 - ✅ **Add to Cart**: Add products with quantity selection
 - ✅ **Cart Persistence**: localStorage-based cart state
 - ✅ **Quantity Management**: Update quantities with +/- controls
@@ -58,6 +61,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ✅ **Price Calculations**: Automatic totals and discounts
 
 #### **🎨 UI/UX**
+
 - ✅ **shadcn/ui Components**: Consistent, accessible component library
 - ✅ **Mobile-First Design**: Touch-friendly interactions
 - ✅ **Responsive Layout**: Works on all screen sizes
@@ -66,6 +70,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ✅ **Accessibility**: ARIA labels and keyboard navigation
 
 #### **⚡ Performance**
+
 - ✅ **ISR Caching**: Product pages with 1-hour revalidation
 - ✅ **Server Components**: Default to server-side rendering
 - ✅ **Code Splitting**: Lazy loading for non-critical components
@@ -73,6 +78,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ✅ **Bundle Optimization**: Tree-shaking and minimal dependencies
 
 #### **🔧 Technical**
+
 - ✅ **TypeScript**: Full type safety with strict configuration
 - ✅ **State Management**: Zustand for client state
 - ✅ **React Query**: Server state management and caching
@@ -82,6 +88,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 ### 🚧 **To Be Implemented**
 
 #### **🔍 Advanced Product Features**
+
 - ❌ **Product Filters**: Category, price range, brand filtering
 - ❌ **Sort Options**: Sort by price, name, rating, date
 - ❌ **Advanced Search**: Search by multiple criteria
@@ -90,6 +97,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ❌ **Product Recommendations**: "You might also like" suggestions
 
 #### **🛒 Enhanced Cart & Checkout**
+
 - ❌ **Guest Checkout**: Checkout without account creation
 - ❌ **Shipping Calculator**: Real-time shipping cost calculation
 - ❌ **Coupon Codes**: Discount code application
@@ -97,6 +105,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ❌ **Bulk Operations**: Add multiple items at once
 
 #### **👤 User Management**
+
 - ❌ **User Authentication**: Login/register system
 - ❌ **User Profiles**: Account management and preferences
 - ❌ **Order History**: Past purchase tracking
@@ -104,6 +113,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ❌ **Wishlist**: Personal product wishlist
 
 #### **💳 Payment & Orders**
+
 - ❌ **Payment Processing**: Stripe, PayPal integration
 - ❌ **Order Management**: Order creation and tracking
 - ❌ **Invoice Generation**: Order receipts and invoices
@@ -111,6 +121,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ❌ **Refund System**: Return and refund processing
 
 #### **📊 Analytics & SEO**
+
 - ❌ **Product Analytics**: View tracking and conversion metrics
 - ❌ **SEO Optimization**: Meta tags, structured data
 - ❌ **Search Engine**: Advanced product search indexing
@@ -118,6 +129,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - ❌ **A/B Testing**: Feature flag system
 
 #### **🔧 Admin Features**
+
 - ❌ **Product Management**: Admin dashboard for products
 - ❌ **Inventory Management**: Stock level tracking
 - ❌ **Order Management**: Admin order processing
@@ -215,8 +227,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - Node.js 18+
 - npm or yarn
 
-
-```
+````
 
 ### Development Commands
 
@@ -231,7 +242,7 @@ npm run type-check      # TypeScript type checking
 # Deploy to Vercel
 npm run build           # Build for production
 vercel deploy           # Deploy to Vercel
-```
+````
 
 ### Production URLs
 
@@ -308,7 +319,6 @@ instashop-storefront/
 - **[DummyJSON](https://dummyjson.com)** - Product data API
 - **React Query** - Data fetching, caching, and synchronization
 - **Service Layer** - Clean API abstraction
-
 
 ## 💭 Thought Process & Trade-offs
 
@@ -414,7 +424,6 @@ instashop-storefront/
 - **Current**: ISR with 1-hour revalidation
 - **Limitation**: No advanced cache invalidation
 - **Future**: Could add more sophisticated caching strategies
-
 
 ## 🤝 Contributing
 
