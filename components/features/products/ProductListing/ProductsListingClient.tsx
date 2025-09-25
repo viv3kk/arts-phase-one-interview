@@ -13,7 +13,7 @@ import {
   ProductPagination,
   ResultsHeader,
   ErrorState,
-} from './ProductListing'
+} from './'
 
 interface ProductsListingClientProps {
   initialParams?: {
@@ -142,4 +142,3 @@ export function ProductsListingClient({
     </div>
   )
 }
-

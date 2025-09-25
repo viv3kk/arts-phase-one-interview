@@ -1,6 +1,9 @@
 /**
- * Products feature exports
+ * Main barrel exports for Products feature
  */
 
-export { ProductsListingClient } from './ProductsListingClient'
-export { ProductDetailClient } from './ProductDetailClient'
+// Product Detail components
+export * from './ProductDetail'
+
+// Product Listing components
+export * from './ProductListing'

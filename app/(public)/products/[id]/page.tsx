@@ -3,7 +3,7 @@
  * Server-side rendered with ISR for optimal performance
  */
 
-import { ProductDetailClient } from '@/components/features/products/ProductDetailClient'
+import { ProductDetailClient } from '@/components/features/products/ProductDetail/ProductDetailClient'
 // Unused imports removed
 import { productsService } from '@/lib/services'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
