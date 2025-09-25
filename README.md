@@ -1,8 +1,17 @@
-# Products Storefront
+# InstaShop - Multi-Tenant E-commerce Storefront
+
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/viv3kk/arts-phase-one-interview.git)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://arts-phase-one-interview.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://typescriptlang.org)
 
 ## 🚀 Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/viv3kk/arts-phase-one-interview.git
+cd arts-phase-one-interview
+
 # Install dependencies
 npm install
 
@@ -10,15 +19,129 @@ npm install
 npm run dev
 
 # Visit the application
-open http://localhost:3000                    # Home page
+open http://localhost:3000                    # Home page (InstaShop)
 open http://localhost:3000/products          # Product catalog
 open http://localhost:3000/cart             # Shopping cart
+
+# Production Vercel domains
+open https://arts-phase-one-interview.vercel.app # Default (Ocean theme)
 ```
 
-A modern, high-performance e-commerce storefront built with **Next.js 15**, **shadcn/ui**, **Tailwind CSS v4**, and **Zustand**. Features product listings, detailed product pages, shopping cart functionality, and responsive design optimized for mobile-first experiences.
+A modern, high-performance multi-tenant e-commerce storefront built with **Next.js 15**, **shadcn/ui**, **Tailwind CSS v4**, and **Zustand**. Features dynamic theming, product listings, detailed product pages, shopping cart functionality, and responsive design optimized for mobile-first experiences.
+
+## 🎯 Feature Implementation Status
+
+### ✅ **Implemented Features**
+
+#### **🏢 Multi-Tenant System**
+- ✅ **Dynamic Theming**: CSS custom properties for tenant-specific themes
+- ✅ **Subdomain Routing**: `abc-rentals.localhost:3000` → InstaShop tenant
+- ✅ **Tenant Configuration**: JSON-based tenant management
+- ✅ **Theme Switching**: Ocean, Fire, Forest themes
+- ✅ **Brand Customization**: Tenant-specific content and metadata
+
+#### **🛍️ Product Catalog**
+- ✅ **Product Listing**: Grid and list view modes
+- ✅ **Search Functionality**: Real-time product search with debouncing
+- ✅ **Pagination**: Navigate through product pages
+- ✅ **Responsive Design**: Mobile-first grid layouts
+- ✅ **Loading States**: Skeleton components during data fetching
+- ✅ **Error Handling**: Graceful error states and fallbacks
+
+#### **📱 Product Details**
+- ✅ **Product Information**: Title, price, description, specifications
+- ✅ **Image Gallery**: Main image with thumbnail navigation
+- ✅ **Stock Status**: Real-time stock availability
+- ✅ **Quantity Controls**: Add to cart with quantity selection
+- ✅ **Product Reviews**: Display customer reviews and ratings
+- ✅ **Warranty & Shipping**: Additional product information
+
+#### **🛒 Shopping Cart**
+- ✅ **Add to Cart**: Add products with quantity selection
+- ✅ **Cart Persistence**: localStorage-based cart state
+- ✅ **Quantity Management**: Update quantities with +/- controls
+- ✅ **Cart Badge**: Real-time cart item count in header
+- ✅ **Toast Notifications**: User feedback for cart actions
+- ✅ **Price Calculations**: Automatic totals and discounts
+
+#### **🎨 UI/UX**
+- ✅ **shadcn/ui Components**: Consistent, accessible component library
+- ✅ **Mobile-First Design**: Touch-friendly interactions
+- ✅ **Responsive Layout**: Works on all screen sizes
+- ✅ **Loading States**: Skeleton components and spinners
+- ✅ **Error Boundaries**: Graceful error handling
+- ✅ **Accessibility**: ARIA labels and keyboard navigation
+
+#### **⚡ Performance**
+- ✅ **ISR Caching**: Product pages with 1-hour revalidation
+- ✅ **Server Components**: Default to server-side rendering
+- ✅ **Code Splitting**: Lazy loading for non-critical components
+- ✅ **Image Optimization**: Next.js Image component
+- ✅ **Bundle Optimization**: Tree-shaking and minimal dependencies
+
+#### **🔧 Technical**
+- ✅ **TypeScript**: Full type safety with strict configuration
+- ✅ **State Management**: Zustand for client state
+- ✅ **React Query**: Server state management and caching
+- ✅ **Service Layer**: Clean API abstraction
+- ✅ **Component Architecture**: Composable, reusable components
+
+### 🚧 **To Be Implemented**
+
+#### **🔍 Advanced Product Features**
+- ❌ **Product Filters**: Category, price range, brand filtering
+- ❌ **Sort Options**: Sort by price, name, rating, date
+- ❌ **Advanced Search**: Search by multiple criteria
+- ❌ **Product Comparison**: Compare multiple products
+- ❌ **Wishlist/Favorites**: Save products for later
+- ❌ **Product Recommendations**: "You might also like" suggestions
+
+#### **🛒 Enhanced Cart & Checkout**
+- ❌ **Guest Checkout**: Checkout without account creation
+- ❌ **Shipping Calculator**: Real-time shipping cost calculation
+- ❌ **Coupon Codes**: Discount code application
+- ❌ **Cart Abandonment**: Save cart for later functionality
+- ❌ **Bulk Operations**: Add multiple items at once
+
+#### **👤 User Management**
+- ❌ **User Authentication**: Login/register system
+- ❌ **User Profiles**: Account management and preferences
+- ❌ **Order History**: Past purchase tracking
+- ❌ **Address Book**: Saved shipping addresses
+- ❌ **Wishlist**: Personal product wishlist
+
+#### **💳 Payment & Orders**
+- ❌ **Payment Processing**: Stripe, PayPal integration
+- ❌ **Order Management**: Order creation and tracking
+- ❌ **Invoice Generation**: Order receipts and invoices
+- ❌ **Order Status**: Real-time order tracking
+- ❌ **Refund System**: Return and refund processing
+
+#### **📊 Analytics & SEO**
+- ❌ **Product Analytics**: View tracking and conversion metrics
+- ❌ **SEO Optimization**: Meta tags, structured data
+- ❌ **Search Engine**: Advanced product search indexing
+- ❌ **Performance Monitoring**: Core Web Vitals tracking
+- ❌ **A/B Testing**: Feature flag system
+
+#### **🔧 Admin Features**
+- ❌ **Product Management**: Admin dashboard for products
+- ❌ **Inventory Management**: Stock level tracking
+- ❌ **Order Management**: Admin order processing
+- ❌ **User Management**: Customer account administration
+- ❌ **Analytics Dashboard**: Business metrics and reporting
+
+### 🔄 **Recent Improvements**
+
+- **Component Refactoring**: Extracted ProductDetail and ProductListing into organized folders
+- **Multi-Tenant Branding**: Updated all ABC Rental references to InstaShop
+- **Home Page Cleanup**: Simplified home page template with InstaShop branding
+- **Import Path Updates**: Fixed all import paths after component reorganization
+- **Code Quality**: Applied Prettier formatting and resolved linting issues
 
 ## ✨ Features
 
+- **🏢 Multi-Tenant Architecture**: Dynamic theming and branding per tenant
 - **🛍️ Product Catalog**: Browse products with search, filtering, and pagination
 - **📱 Product Details**: Rich product pages with image galleries and reviews
 - **🛒 Shopping Cart**: Persistent cart with quantity controls and animations
@@ -54,6 +177,13 @@ A modern, high-performance e-commerce storefront built with **Next.js 15**, **sh
 
 ## 🏗️ Architecture
 
+### Multi-Tenant System
+
+| Tenant | Local Development | Production (Vercel) | Theme | Brand |
+|--------|------------------|---------------------|-------|-------|
+| InstaShop | `abc-rentals.localhost:3000` | `arts-shop.vercel.app` | Fire | InstaShop |
+| Default | `localhost:3000` | `arts-phase-one-interview.vercel.app` | Ocean | Default |
+
 ### Rendering Strategies
 
 | Content Type  | Strategy | Cache Duration | Use Case                          |
@@ -75,11 +205,22 @@ A modern, high-performance e-commerce storefront built with **Next.js 15**, **sh
 ### Component Architecture
 
 ```
-📦 shadcn/ui Components
-├── 🎨 Consistent design system
-├── ♿ Built-in accessibility features
-├── 🎯 Type-safe props
-└── 📱 Mobile-first responsive design
+📦 Organized Component Structure
+├── 🏢 ProductDetail/          # Product detail components
+│   ├── ProductImages/        # Image gallery components
+│   ├── ProductInformation/   # Product info components
+│   ├── ProductReviews/       # Review components
+│   ├── context/              # Context providers
+│   └── hooks/                # Custom hooks
+├── 🛍️ ProductListing/        # Product listing components
+│   ├── ProductFilters/       # Filter components
+│   ├── ProductCard/          # Product card component
+│   └── ProductPagination/    # Pagination components
+└── 🎨 shadcn/ui Components   # Base UI components
+    ├── 🎨 Consistent design system
+    ├── ♿ Built-in accessibility features
+    ├── 🎯 Type-safe props
+    └── 📱 Mobile-first responsive design
 ```
 
 ## 🚀 How to Run Locally
@@ -89,21 +230,7 @@ A modern, high-performance e-commerce storefront built with **Next.js 15**, **sh
 - Node.js 18+
 - npm or yarn
 
-### Installation & Setup
 
-```bash
-# Clone the repository
-git clone <repository-url>
-cd products-storefront
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Open in browser
-open http://localhost:3000
 ```
 
 ### Development Commands
@@ -115,33 +242,59 @@ npm run build           # Build for production
 npm run start           # Start production server
 npm run lint            # Run ESLint
 npm run type-check      # TypeScript type checking
+
+# Deploy to Vercel
+npm run build           # Build for production
+vercel deploy           # Deploy to Vercel
 ```
+
+### Production URLs
+
+- **Arts Phase One (Ocean Theme)**: https://arts-phase-one-interview.vercel.app
 
 ## 🗂️ Project Structure
 
 ```
-products-storefront/
+instashop-storefront/
 ├── app/
 │   ├── (public)/
 │   │   ├── layout.tsx         # Public layout with header
-│   │   ├── page.tsx          # Home page
+│   │   ├── page.tsx          # Home page (InstaShop branding)
 │   │   ├── products/         # Product pages (ISR)
 │   │   └── cart/            # Cart page (SSR)
 │   ├── layout.tsx            # Root layout with providers
-│   └── globals.css           # Global styles + animations
+│   └── globals.css           # Global styles + theme tokens
 ├── components/
 │   ├── features/
-│   │   ├── products/        # Product components
-│   │   └── cart/           # Cart components
+│   │   └── products/        # Product components
+│   │       ├── ProductDetail/    # Product detail components
+│   │       │   ├── ProductImages/    # Image gallery
+│   │       │   ├── ProductInformation/ # Product info
+│   │       │   ├── ProductReviews/    # Reviews
+│   │       │   ├── context/           # Context providers
+│   │       │   └── hooks/             # Custom hooks
+│   │       └── ProductListing/    # Product listing components
+│   │           ├── ProductFilters/    # Filter components
+│   │           ├── ProductCard/       # Product cards
+│   │           └── ProductPagination/ # Pagination
 │   ├── header/             # Navigation components
 │   ├── providers/          # Context providers
 │   └── ui/                # shadcn/ui components
+├── config/
+│   ├── tenants.json       # Tenant registry
+│   └── tenants/          # Tenant configurations
+│       ├── default.json   # Default tenant
+│       ├── abc-rentals.json # InstaShop (Fire theme)
+│       ├── xyz-cars.json  # XYZ Cars (Forest theme)
+│       ├── arts-shop.json # InstaShop (Fire theme) - Vercel
+│       └── arts-phase-one-interview.json # Arts Phase One (Ocean theme) - Vercel
 ├── lib/
 │   ├── services/          # API services & hooks
 │   ├── stores/           # Zustand store
 │   ├── types/            # TypeScript definitions
+│   ├── themes/           # Theme configurations
 │   └── utils/            # Helper functions
-├── middleware.ts          # Route handling
+├── middleware.ts          # Multi-tenant routing
 └── next.config.js        # Next.js configuration
 ```
 
@@ -170,6 +323,13 @@ products-storefront/
 - **[DummyJSON](https://dummyjson.com)** - Product data API
 - **React Query** - Data fetching, caching, and synchronization
 - **Service Layer** - Clean API abstraction
+
+### Multi-Tenant Features
+
+- **Dynamic Theming** - CSS custom properties for tenant-specific themes
+- **Subdomain Routing** - Tenant detection via middleware
+- **Tenant Configuration** - JSON-based tenant management
+- **Brand Customization** - Tenant-specific content and metadata
 
 ## 💭 Thought Process & Trade-offs
 
@@ -276,24 +436,6 @@ products-storefront/
 - **Limitation**: No advanced cache invalidation
 - **Future**: Could add more sophisticated caching strategies
 
-## 🎯 Key Features Implemented
-
-### ✅ Completed Features
-
-- **Product Catalog**: Search, filter, pagination, and responsive grid/list views
-- **Product Details**: Rich product pages with image galleries and reviews
-- **Shopping Cart**: Persistent cart with quantity controls and animations
-- **Mobile-First UI**: Responsive design with touch-friendly interactions
-- **State Management**: Zustand store with localStorage persistence
-- **Performance**: ISR caching for optimal loading speeds
-- **Type Safety**: Full TypeScript implementation
-
-### 🔄 Recent Improvements
-
-- **Cart Header Updates**: Fixed reactive cart badge updates
-- **Toast Notifications**: Enhanced user feedback for cart actions
-- **Mobile Navigation**: Responsive header with cart badge animations
-- **Hydration Fixes**: Resolved server-client rendering mismatches
 
 ## 🤝 Contributing
 
@@ -309,4 +451,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Next.js 15, shadcn/ui, Tailwind CSS v4, and Zustand**
+**InstaShop - Built with ❤️ using Next.js 15, shadcn/ui, Tailwind CSS v4, and Zustand**

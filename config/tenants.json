@@ -2,13 +2,13 @@
   "tenants": {
     "abc-rentals": {
       "id": "abc-rentals",
-      "name": "ABC Car Rentals",
+      "name": "InstaShop",
       "status": "active",
       "configFile": "abc-rentals.json"
     },
     "abc-rental": {
       "id": "abc-rental",
-      "name": "ABC Rental",
+      "name": "InstaShop",
       "status": "active",
       "configFile": "abc-rental.json"
     },
@@ -29,6 +29,20 @@
       "name": "XYZ Rental",
       "status": "active",
       "configFile": "xyz-rental.json"
+    },
+    "arts-shop": {
+      "id": "arts-shop",
+      "name": "InstaShop",
+      "status": "active",
+      "configFile": "arts-shop.json",
+      "domain": "arts-shop.vercel.app"
+    },
+    "arts-phase-one-interview": {
+      "id": "arts-phase-one-interview",
+      "name": "Arts Phase One",
+      "status": "active",
+      "configFile": "arts-phase-one-interview.json",
+      "domain": "arts-phase-one-interview.vercel.app"
     }
   },
   "default": "default.json"

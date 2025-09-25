@@ -100,7 +100,7 @@ lib/
 ### **Available Themes**
 
 - 🌊 **Ocean**: `#2563eb` - Professional, trustworthy (default)
-- 🔥 **Fire**: `#dc2626` - Bold, energetic (ABC Rental)
+- 🔥 **Fire**: `#dc2626` - Bold, energetic (InstaShop)
 - 🌲 **Forest**: `#059669` - Natural, sustainable (XYZ Cars)
 
 ### **Authentication System**

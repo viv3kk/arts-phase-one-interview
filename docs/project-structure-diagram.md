@@ -41,7 +41,7 @@ storefront/
 │   ├── tenants.json                   # 📋 Tenant Registry
 │   └── tenants/                       # 🏢 Tenant Configs
 │       ├── default.json              # 🔄 Default Config
-│       ├── abc-rentals.json          # 🚗 ABC Rentals
+│       ├── abc-rentals.json          # 🚗 InstaShop
 │       ├── xyz-cars.json             # 🚙 XYZ Cars
 │       └── test-rental.json          # 🧪 Test Tenant
 │

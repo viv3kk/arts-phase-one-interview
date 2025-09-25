@@ -290,7 +290,7 @@ export function useSendOtp() {
 // config/tenants/abc-rentals.json
 {
   "id": "abc-rentals",
-  "name": "ABC Rentals",
+  "name": "InstaShop",
   "domain": "abc-rentals.localhost",
   "theme": {
     "primary": "#3B82F6",
@@ -301,7 +301,7 @@ export function useSendOtp() {
     "baseUrl": "https://api.abc-rentals.com"
   },
   "metadata": {
-    "title": "ABC Rentals - Premium Car Rental",
+    "title": "InstaShop - Premium Car Rental",
     "description": "Best car rental service in the city"
   }
 }

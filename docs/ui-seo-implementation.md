@@ -122,9 +122,9 @@ Each tenant now supports comprehensive SEO configuration:
 
 ## **📊 SEO Features by Tenant**
 
-### **ABC Car Rentals**
+### **InstaShop**
 
-- Keywords: car rental, ABC rentals, premium vehicles, business car hire
+- Keywords: car rental, InstaShop rentals, premium vehicles, business car hire
 - Custom favicon: `/favicons/abc-rentals.ico`
 - Open Graph image: `/images/abc-rentals-og.jpg`
 - Twitter: @abcrentals

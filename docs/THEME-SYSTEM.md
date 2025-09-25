@@ -56,7 +56,7 @@ Tenants specify their theme in their configuration file:
 ```json
 {
   "id": "abc-rental",
-  "name": "ABC Rental",
+  "name": "InstaShop",
   "theme": "fire",
   "content": {
     // ... tenant content
