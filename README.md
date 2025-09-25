@@ -33,13 +33,6 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 
 ### ✅ **Implemented Features**
 
-#### **🏢 Multi-Tenant System**
-- ✅ **Dynamic Theming**: CSS custom properties for tenant-specific themes
-- ✅ **Subdomain Routing**: `abc-rentals.localhost:3000` → InstaShop tenant
-- ✅ **Tenant Configuration**: JSON-based tenant management
-- ✅ **Theme Switching**: Ocean, Fire, Forest themes
-- ✅ **Brand Customization**: Tenant-specific content and metadata
-
 #### **🛍️ Product Catalog**
 - ✅ **Product Listing**: Grid and list view modes
 - ✅ **Search Functionality**: Real-time product search with debouncing
@@ -134,7 +127,6 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 ### 🔄 **Recent Improvements**
 
 - **Component Refactoring**: Extracted ProductDetail and ProductListing into organized folders
-- **Multi-Tenant Branding**: Updated all ABC Rental references to InstaShop
 - **Home Page Cleanup**: Simplified home page template with InstaShop branding
 - **Import Path Updates**: Fixed all import paths after component reorganization
 - **Code Quality**: Applied Prettier formatting and resolved linting issues
@@ -176,13 +168,6 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - **Visual Feedback**: Animated cart badge and toast notifications
 
 ## 🏗️ Architecture
-
-### Multi-Tenant System
-
-| Tenant | Local Development | Production (Vercel) | Theme | Brand |
-|--------|------------------|---------------------|-------|-------|
-| InstaShop | `abc-rentals.localhost:3000` | `arts-shop.vercel.app` | Fire | InstaShop |
-| Default | `localhost:3000` | `arts-phase-one-interview.vercel.app` | Ocean | Default |
 
 ### Rendering Strategies
 
@@ -324,12 +309,6 @@ instashop-storefront/
 - **React Query** - Data fetching, caching, and synchronization
 - **Service Layer** - Clean API abstraction
 
-### Multi-Tenant Features
-
-- **Dynamic Theming** - CSS custom properties for tenant-specific themes
-- **Subdomain Routing** - Tenant detection via middleware
-- **Tenant Configuration** - JSON-based tenant management
-- **Brand Customization** - Tenant-specific content and metadata
 
 ## 💭 Thought Process & Trade-offs
 
