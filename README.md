@@ -24,7 +24,6 @@ open http://localhost:3000/products          # Product catalog
 open http://localhost:3000/cart             # Shopping cart
 
 # Production Vercel domains
-open https://arts-shop.vercel.app            # InstaShop (Fire theme)
 open https://arts-phase-one-interview.vercel.app # Default (Ocean theme)
 ```
 
@@ -231,21 +230,7 @@ A modern, high-performance multi-tenant e-commerce storefront built with **Next.
 - Node.js 18+
 - npm or yarn
 
-### Installation & Setup
 
-```bash
-# Clone the repository
-git clone <repository-url>
-cd products-storefront
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Open in browser
-open http://localhost:3000
 ```
 
 ### Development Commands
@@ -265,7 +250,6 @@ vercel deploy           # Deploy to Vercel
 
 ### Production URLs
 
-- **InstaShop (Fire Theme)**: https://arts-shop.vercel.app
 - **Arts Phase One (Ocean Theme)**: https://arts-phase-one-interview.vercel.app
 
 ## 🗂️ Project Structure
